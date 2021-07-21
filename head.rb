@@ -1,0 +1,5 @@
+require_relative 'head/active_job'
+require_relative 'head/active_record'
+require_relative 'head/delayed_job'
+require_relative 'head/action_cable'
+require_relative 'head/rack_middleware'
