@@ -2,7 +2,7 @@ module Gorynich
   class Fetcher
     attr_reader :prefix, :file, :version, :redis_ns
 
-    def initialize(prefix: 'advisers', file: '/tmp/planner.json', expiration: 30, local: false)
+    def initialize(prefix: 'advisers', file: '/tmp/tenants.json', expiration: 30, local: false)
       @prefix = prefix
       @file = file.to_s
       @version = 0
