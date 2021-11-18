@@ -4,8 +4,18 @@ module Gorynich
     module ActiveJob
       extend ::ActiveSupport::Concern
 
-      included do
+      included do # rubocop:disable Metrics/BlockLength
         attr_reader :current_domain, :current_tenant
+
+        def serialize
+          super.merge(domain: Gorynich::Current.domain, tenant: Gorynich::Current.tenant)
+        end
+
+        def deserialize(job_data)
+          super
+          @current_domain = job_data.fetch(:domain)
+          @current_tenant = job_data.fetch(:tenant)
+        end
 
         around_perform do |job, block|
           Gorynich.with(job.current_tenant, domain: job.current_domain) do |current|
@@ -28,16 +38,6 @@ module Gorynich
             block.call
           end
         end
-      end
-
-      def serialize
-        super.merge(domain: Gorynich::Current.domain, tenant: Gorynich::Current.tenant)
-      end
-
-      def deserialize(job_data)
-        super
-        @current_domain = job_data.fetch(:domain)
-        @current_tenant = job_data.fetch(:tenant)
       end
     end
   end
