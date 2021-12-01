@@ -3,6 +3,8 @@ module Gorynich
     attribute :tenant
     attribute :config
     attribute :domain
+    attribute :schema
+    attribute :host
     attribute :secrets
     attribute :database
 
