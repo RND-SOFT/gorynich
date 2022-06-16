@@ -21,13 +21,18 @@ module Gorynich
         end
       rescue Gorynich::DomainNotFound, Gorynich::TenantNotFound => e
         Rails.logger.error(e.inspect)
-        file = File.read('public/tenant_error.html')
-        [404, { 'Content-Type' => 'text/html', 'Content-Length' => file.size.to_s }, [file]]
+        render_error_page(404, 'По данному домену сервис не найден', e.to_s)
       rescue StandardError => e
         Rails.logger.error("Gorynich Error: #{e.inspect}")
         Rails.logger.debug(e.backtrace)
-        file = File.read('public/tenant_error.html')
-        [404, { 'Content-Type' => 'text/html', 'Content-Length' => file.size.to_s }, [file]]
+        render_error_page(500, 'Неизвестная ошибка', e.to_s)
+      end
+
+      def render_error_page(code, message, details)
+        template = File.read("#{File.dirname(__FILE__)}/../views/tenant_error.html.erb")
+        rendered_template = ApplicationController.render(assigns: { code: code, message: message, details: details },
+                                                         inline: template)
+        [code, { 'Content-Type' => 'text/html', 'Content-Length' => rendered_template.size.to_s }, [rendered_template]]
       end
     end
   end
