@@ -21,7 +21,7 @@ module Gorynich
         end
       rescue Gorynich::DomainNotFound, Gorynich::TenantNotFound => e
         Rails.logger.error(e.inspect)
-        render_error_page(404, 'По данному домену сервис не найден', e.to_s)
+        render_error_page(404, I18n.t('gorynich.errors.service_not_found'), e.to_s)
       rescue StandardError => e
         Rails.logger.error("Gorynich Error: #{e.inspect}")
         Rails.logger.debug(e.backtrace)
