@@ -1,0 +1,29 @@
+db_config: &db_config
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  pool: 10
+  port: 5432
+  username: xxx
+  password: xxx
+
+development:
+  default:
+    db_config:
+      <<: *db_config
+      database: planner_default
+  local:
+    db_config:
+      <<: *db_config
+      database: planner_local
+    secrets:
+      hosts:
+        - http://localhost:3000
+        - https://171f-80-68-11-146.eu.ngrok.io
+  local1:
+    db_config:
+      <<: *db_config
+      database: planner_local
+    secrets:
+      hosts:
+        - http://test.sovetnik.local

@@ -1,0 +1,35 @@
+require_relative 'fetchers/hybrid'
+
+module Gorynich
+  class Fetcher
+    AVAILABLE_ALIASES = [
+      'db_config'
+    ].freeze
+
+    def initialize(fetcher: nil, namespace: nil, **opts)
+      @fetcher = fetcher || Gorynich.configuration.fetcher
+      @namespace = namespace || Gorynich.configuration.namespace
+      @cache_expiration = opts.delete(:cache_expiration) { Gorynich.configuration.cache_expiration }
+    end
+
+    def fetch
+      cfg = Gorynich.configuration.cache.fetch(
+        %i[gorynich fetcher fetch], expires_in: @cache_expiration.seconds, namespace: @namespace
+      ) do
+        if @fetcher.nil?
+          {}
+        elsif @fetcher.is_a?(Array)
+          @fetcher.each do |f|
+            f.fetch.except(*AVAILABLE_ALIASES)
+          end
+        else
+          @fetcher.fetch.except(*AVAILABLE_ALIASES)
+        end
+      end
+
+      raise Error, 'Config is empty' if cfg.empty?
+
+      cfg
+    end
+  end
+end

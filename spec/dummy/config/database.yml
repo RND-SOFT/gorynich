@@ -1,0 +1,1 @@
+<%= Gorynich.instance.database_config %>
