@@ -11,19 +11,39 @@ development:
   default:
     db_config:
       <<: *db_config
-      database: planner_default
+      database: gorynich_default
   local:
     db_config:
       <<: *db_config
-      database: planner_local
+      database: gorynich_local
     secrets:
-      hosts:
+      uris:
         - http://localhost:3000
         - https://171f-80-68-11-146.eu.ngrok.io
   local1:
     db_config:
       <<: *db_config
-      database: planner_local
+      database: gorynich_local1
     secrets:
-      hosts:
-        - http://test.sovetnik.local
+      uris:
+        - http://test.local:3000
+test:
+  default:
+    db_config:
+      <<: *db_config
+      database: gorynich_test_default
+  local:
+    db_config:
+      <<: *db_config
+      database: gorynich_test_local
+    secrets:
+      uris:
+        - http://localhost:3000
+        - https://171f-80-68-11-146.eu.ngrok.io
+  local1:
+    db_config:
+      <<: *db_config
+      database: gorynich_test_local1
+    secrets:
+      uris:
+        - http://test.local

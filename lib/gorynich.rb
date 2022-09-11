@@ -21,13 +21,13 @@ module Gorynich
     end
   end
 
-  class DomainNotFound < Error
-    attr_reader :domain
+  class UriNotFound < Error
+    attr_reader :uri
 
-    def initialize(domain, message = nil)
-      @domain = domain
+    def initialize(uri, message = nil)
+      @uri = uri
 
-      super(message || "Domain #{@domain} not found")
+      super(message || "URI #{@uri} not found")
     end
   end
 

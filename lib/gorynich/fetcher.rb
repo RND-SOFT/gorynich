@@ -2,10 +2,6 @@ require_relative 'fetchers/hybrid'
 
 module Gorynich
   class Fetcher
-    AVAILABLE_ALIASES = [
-      'db_config'
-    ].freeze
-
     def initialize(fetcher: nil, namespace: nil, **opts)
       @fetcher = fetcher || Gorynich.configuration.fetcher
       @namespace = namespace || Gorynich.configuration.namespace
@@ -20,10 +16,10 @@ module Gorynich
           {}
         elsif @fetcher.is_a?(Array)
           @fetcher.each do |f|
-            f.fetch.except(*AVAILABLE_ALIASES)
+            f.fetch
           end
         else
-          @fetcher.fetch.except(*AVAILABLE_ALIASES)
+          @fetcher.fetch
         end
       end
 

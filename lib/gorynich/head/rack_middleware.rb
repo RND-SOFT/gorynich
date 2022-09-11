@@ -19,19 +19,16 @@ module Gorynich
             @app.call(env)
           end
         end
-      rescue Gorynich::DomainNotFound => e
+      rescue Gorynich::UriNotFound => e
         Rails.logger.error(e.inspect)
-        file = File.read('public/tenant_error.html')
-        [404, { 'Content-Type' => 'text/html', 'Content-Length' => file.size.to_s }, [file]]
+        [404, { 'Content-Type' => 'text/txt' }, [e.message]]
       rescue Gorynich::TenantNotFound => e
         Rails.logger.error(e.inspect)
-        file = File.read('public/tenant_error.html')
-        [404, { 'Content-Type' => 'text/html', 'Content-Length' => file.size.to_s }, [file]]
+        [404, { 'Content-Type' => 'text/txt' }, [e.message]]
       rescue StandardError => e
         Rails.logger.error("Gorynich Error: #{e.inspect}")
         Rails.logger.debug(e.backtrace)
-        file = File.read('public/tenant_error.html')
-        [404, { 'Content-Type' => 'text/html', 'Content-Length' => file.size.to_s }, [file]]
+        [500, { 'Content-Type' => 'text/txt' }, ['Gorynich internal error']]
       end
     end
   end

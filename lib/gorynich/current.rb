@@ -1,7 +1,7 @@
 module Gorynich
   class Current < ::ActiveSupport::CurrentAttributes
     attribute :tenant
-    attribute :domain
+    attribute :uri
     attribute :secrets
     attribute :database
 

@@ -28,8 +28,8 @@ module Dummy
     config.active_record.writing_role = :default
 
     ::Gorynich.init do |env|
-      domain = env['SERVER_NAME']
-      [Gorynich.instance.tenant_by_domain(domain), { domain: domain }]
+      uri = env['REQUEST_URI']
+      [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
     end
 
     config.hosts.clear

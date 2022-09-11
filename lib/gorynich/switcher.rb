@@ -28,8 +28,9 @@ module Gorynich
       end
     end
 
-    def with_each_tenant(&block)
-      @config.tenants.each do |tenant|
+    def with_each_tenant(except: [], &block)
+      except = except.map(&:to_s)
+      @config.tenants.reject { |v| except.include?(v) }.each do |tenant|
         with(tenant, &block)
       end
     end
