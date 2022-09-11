@@ -1,4 +1,5 @@
-require_relative 'fetchers/hybrid'
+require_relative 'fetchers/file'
+require_relative 'fetchers/consul'
 
 module Gorynich
   class Fetcher
