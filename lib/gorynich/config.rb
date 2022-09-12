@@ -62,7 +62,7 @@ module Gorynich
     end
 
     def database_config(env = nil)
-      envs = Dir.glob('./config/environments/*.rb').map { |filename| File.basename(filename, '.rb') }
+      envs = Dir.glob(Rails.root.join('config/environments/*.rb').to_s).map { |f| File.basename(f, '.rb') }
       cfg = fetcher.fetch.extract!(*envs)
 
       result =

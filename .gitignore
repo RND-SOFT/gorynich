@@ -11,3 +11,4 @@ spec/dummy/db/*schema.rb
 config.yml
 config.yaml
 .ruby-version
+/coverage/

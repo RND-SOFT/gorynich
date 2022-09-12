@@ -15,8 +15,20 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir['{lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
-  spec.add_dependency 'rails', '~> 6.1'
   spec.add_dependency 'diplomat', '~> 2'
+  spec.add_dependency 'rails', '~> 6.1'
 
+  spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'pg'
+  spec.add_development_dependency 'rspec-collection_matchers'
+  spec.add_development_dependency 'rspec_junit_formatter'
+  spec.add_development_dependency 'rspec-rails'
+  spec.add_development_dependency 'rspec-retry'
+  spec.add_development_dependency 'rspec-set'
+  spec.add_development_dependency 'shoulda-callback-matchers'
+  spec.add_development_dependency 'shoulda-matchers'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'simplecov-console'
+
+  spec.test_files = Dir['spec/**/*']
 end

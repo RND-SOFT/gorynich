@@ -1,4 +1,4 @@
-desc 'Explaining what the task does'
+desc 'Gorynich console'
 task gc: :environment do
   require 'irb'
   require 'irb/completion'
