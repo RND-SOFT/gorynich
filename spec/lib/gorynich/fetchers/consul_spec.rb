@@ -26,23 +26,34 @@ RSpec.describe Gorynich::Fetchers::Consul do
     let(:consul_opts) { { http_addr: consul_host } }
 
     def consul_request(response, code = 200)
-      stub_request(:get, "#{consul_host}/v1/kv/est?recurse=true").to_return(
-        status: code,
-        body: response
-      )
+      stub_request(:get, "#{consul_host}/v1/kv/#{storage}?recurse=true")
+        .to_return(
+          status: code,
+          body: response
+        )
     end
 
     subject { described_class.new(storage: storage, **consul_opts) }
 
     describe 'when consul return data' do
-      let(:response) { [].to_json }
+      let(:response) { [{ 'Key' => "#{storage}/test_key", 'Value' => Base64.encode64('test') }].to_json }
 
       before(:each) do
         consul_request(response)
       end
 
       it do
-        expect(subject.fetch.class).to eq(Hash)
+        expect(subject.fetch).to eq({ 'test_key' => 'test' })
+      end
+    end
+
+    describe 'when http error' do
+      before(:each) do
+        consul_request([], 500)
+      end
+
+      it do
+        expect(subject.fetch).to eq({})
       end
     end
   end
