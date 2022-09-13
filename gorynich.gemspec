@@ -29,6 +29,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'shoulda-matchers'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'simplecov-console'
+  spec.add_development_dependency 'faker'
+  spec.add_development_dependency 'webmock'
 
   spec.test_files = Dir['spec/**/*']
 end

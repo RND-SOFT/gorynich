@@ -2,6 +2,10 @@ require 'rspec/retry'
 require 'shoulda/matchers'
 require 'simplecov'
 require 'simplecov-console'
+require 'faker'
+require 'webmock/rspec'
+
+RSPEC_ROOT = File.dirname(__FILE__)
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter
@@ -26,6 +30,10 @@ end
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
+  config.verbose_retry = true
+  config.default_retry_count = 3
+  config.exceptions_to_retry = [Net::ReadTimeout]
+
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
   end

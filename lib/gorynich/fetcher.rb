@@ -16,9 +16,12 @@ module Gorynich
         if @fetcher.nil?
           {}
         elsif @fetcher.is_a?(Array)
+          result = {}
           @fetcher.each do |f|
-            f.fetch
+            result = f.fetch
+            break unless result.empty?
           end
+          result
         else
           @fetcher.fetch
         end
