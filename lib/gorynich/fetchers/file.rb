@@ -1,3 +1,4 @@
+require 'erb'
 require 'yaml'
 
 module Gorynich
@@ -10,7 +11,7 @@ module Gorynich
       end
 
       def fetch
-        YAML.load_file(file_path) || {}
+        ::YAML.load(::ERB.new(::File.read(file_path)).result) || {}
       rescue ::StandardError
         {}
       end

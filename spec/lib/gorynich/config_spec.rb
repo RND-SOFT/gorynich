@@ -221,4 +221,24 @@ RSpec.describe Gorynich::Config do
       end
     end
   end
+
+  context '#database_config' do
+    describe 'when without env' do
+      it do
+        expect(subject.database_config).to include('development', 'test')
+      end
+    end
+
+    describe 'when with end' do
+      it do
+        dev_res = subject.database_config('development')
+        expect(dev_res).to include('gorynich_local')
+        expect(dev_res).not_to include('gorynich_test_local')
+
+        test_res = subject.database_config('test')
+        expect(test_res).to include('gorynich_test_local')
+        expect(test_res).not_to include('gorynich_local')
+      end
+    end
+  end
 end

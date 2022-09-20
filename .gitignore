@@ -12,3 +12,4 @@ config.yml
 config.yaml
 .ruby-version
 /coverage/
+.env

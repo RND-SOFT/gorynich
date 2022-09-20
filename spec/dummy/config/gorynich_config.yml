@@ -4,8 +4,8 @@ db_config: &db_config
   host: localhost
   pool: 10
   port: 5432
-  username: xxx
-  password: xxx
+  username: <%= ENV.fetch('DB_USERNAME', 'xxx') %>
+  password: <%= ENV.fetch('DB_PASSWORD', 'xxx') %>
 
 development:
   default:
