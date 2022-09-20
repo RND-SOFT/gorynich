@@ -27,11 +27,6 @@ module Dummy
     # the framework and any gems in your application.
     config.active_record.writing_role = :default
 
-    ::Gorynich.init do |env|
-      uri = env['REQUEST_URI']
-      [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
-    end
-
     config.hosts.clear
   end
 end

@@ -91,6 +91,11 @@ module Gorynich
     def configure
       yield(configuration)
 
+      ::Gorynich.init do |env|
+        uri = env['REQUEST_URI']
+        [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
+      end
+
       ::ActiveRecord::Base.include(Head::ActiveRecord)
       ::ActionCable::Channel::Base.include(Head::ActionCable::Channel)
       ::ActiveJob::Base.include(Head::ActiveJob)
