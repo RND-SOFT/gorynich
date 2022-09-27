@@ -2,7 +2,6 @@ module Gorynich
   class Configuration
     attr_accessor :cache,
                   :fetcher,
-                  :fetchers,
                   :namespace,
                   :cache_expiration
 
