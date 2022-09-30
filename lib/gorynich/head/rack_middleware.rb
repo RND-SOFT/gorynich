@@ -10,7 +10,11 @@ module Gorynich
         @config ||= Gorynich.instance
         @config.actualize
 
-        tenant, opts = Gorynich.switcher.analyze(env)
+        tenant, opts =
+          Gorynich.switcher.analyze(env) do
+            uri = env['REQUEST_URI']
+            [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
+          end
 
         Gorynich.with(tenant, **opts) do
           if Rails.logger.respond_to?(:tagged)

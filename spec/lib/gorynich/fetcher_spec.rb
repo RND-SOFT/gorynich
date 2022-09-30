@@ -28,7 +28,7 @@ RSpec.describe Gorynich::Fetcher do
           config.cache_expiration = cache_expiration
         end
       end
-      
+
       subject { described_class.new }
 
       it do

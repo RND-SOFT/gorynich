@@ -5,7 +5,7 @@ module Gorynich
 
       included do
         around_perform do |_job, block|
-          Gorynich.with(Gorynich::Current.tenant, uri: Gorynich::Current.uri) do |current|
+          Gorynich.with(Gorynich::Current.tenant, uri: Gorynich::Current.uri) do |_current|
             block.call
           end
         end

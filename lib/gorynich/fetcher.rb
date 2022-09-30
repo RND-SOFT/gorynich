@@ -3,7 +3,7 @@ require_relative 'fetchers/consul'
 
 module Gorynich
   class Fetcher
-    attr_reader :fetcher, :namespace, :cache_expiration 
+    attr_reader :fetcher, :namespace, :cache_expiration
 
     def initialize(fetcher: nil, namespace: nil, **opts)
       @fetcher = fetcher || Gorynich.configuration.fetcher

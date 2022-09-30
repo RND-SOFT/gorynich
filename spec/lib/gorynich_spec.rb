@@ -58,4 +58,23 @@ RSpec.describe Gorynich do
       end
     end
   end
+
+  context '::with_each_tenant' do
+    describe 'when without except' do
+      it do
+        expect(ActiveRecord::Base.connection.current_database).to eq(
+          described_class.instance.database('default').fetch('database')
+        )
+        expect(described_class::Current.tenant).to be_nil
+
+        described_class.with_each_tenant do |t|
+          expect(described_class.instance.tenants).to include(t.tenant)
+          expect(ActiveRecord::Base.connection.current_database).to eq(
+            described_class.instance.database(t.tenant).fetch('database')
+          )
+          expect(described_class::Current.tenant).to eq(t.tenant)
+        end
+      end
+    end
+  end
 end

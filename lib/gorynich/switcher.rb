@@ -1,12 +1,11 @@
 module Gorynich
   class Switcher
-    def initialize(config:, &block)
+    def initialize(config:)
       @config = config
-      @analyzer = block
     end
 
-    def analyze(env)
-      tenant, opts = @analyzer.call(env)
+    def analyze(env, &block)
+      tenant, opts = block.call(env)
       [tenant, opts || {}]
     end
 

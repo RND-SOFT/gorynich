@@ -32,36 +32,19 @@ module Gorynich
   end
 
   class << self
-    attr_accessor :mx
-  end
+    attr_accessor :configuration
 
-  self.mx = Monitor.new
-
-  class << self
-    attr_accessor :configuration,
-                  :initializer
-
-    def init(&block)
-      self.initializer = proc do
-        Gorynich::Config.new.tap do |config|
-          @switcher ||= Gorynich::Switcher.new(config: config, &block)
-        end
-      end
+    def reload
+      @instance = Gorynich::Config.new
+      @switcher = Switcher.new(config: instance)
     end
 
-    def instance(reload: false)
-      return @instance if @instance && !reload
-
-      mx.synchronize do
-        @instance = initializer.call
-      end
+    def instance
+      @instance ||= Gorynich::Config.new
     end
 
     def switcher
-      return @switcher if @switcher
-
-      instance
-      @switcher
+      @switcher ||= Switcher.new(config: instance)
     end
 
     def with_database(*args, &block)
@@ -91,16 +74,9 @@ module Gorynich
     def configure
       yield(configuration)
 
-      ::Gorynich.init do |env|
-        uri = env['REQUEST_URI']
-        [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
-      end
-
-      instance(reload: true)
+      reload
 
       ::ActiveRecord::Base.include(Head::ActiveRecord)
-      ::ActionCable::Channel::Base.include(Head::ActionCable::Channel)
-      ::ActiveJob::Base.include(Head::ActiveJob)
     end
   end
 end

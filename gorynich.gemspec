@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails', '~> 6.1'
 
   spec.add_development_dependency 'factory_bot_rails'
+  spec.add_development_dependency 'faker'
   spec.add_development_dependency 'pg'
   spec.add_development_dependency 'rspec-collection_matchers'
   spec.add_development_dependency 'rspec_junit_formatter'
@@ -29,7 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'shoulda-matchers'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'simplecov-console'
-  spec.add_development_dependency 'faker'
   spec.add_development_dependency 'webmock'
 
   spec.test_files = Dir['spec/**/*']
