@@ -240,5 +240,165 @@ RSpec.describe Gorynich::Config do
         expect(test_res).not_to include('gorynich_local')
       end
     end
+
+    describe 'when use in file just tenants' do
+      let(:database_yml) { File.read("#{RSPEC_ROOT}/fixtures/test_database.yml") }
+
+      subject { ::YAML.load(::ERB.new(database_yml).result) }
+
+      it do
+        expect(subject).to eq(
+          {
+            'development' => {
+              'default' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_default'
+              },
+              'local' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_local'
+              },
+              'local1' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_local1'
+              }
+            },
+            'test' => {
+              'default' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_default'
+              },
+              'local' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_local'
+              },
+              'local1' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_local1'
+              }
+            }
+          }
+        )
+      end
+    end
+
+    describe 'when use in file with tenants and customs configs' do
+      let(:database_yml) { File.read("#{RSPEC_ROOT}/fixtures/env_test_database.yml") }
+
+      subject { ::YAML.load(::ERB.new(database_yml).result) }
+
+      it do
+        expect(subject).to eq(
+          {
+            'development' => {
+              'default' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_default'
+              },
+              'local' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_local'
+              },
+              'local1' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_local1'
+              },
+              'shared' => {
+                'host' => 'dev'
+              }
+            },
+            'test' => {
+              'default' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_default'
+              },
+              'local' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_local'
+              },
+              'local1' => {
+                'adapter' => 'postgresql',
+                'encoding' => 'unicode',
+                'host' => 'localhost',
+                'pool' => 10,
+                'port' => 5432,
+                'username' => 'xxx',
+                'password' => 'xxx',
+                'database' => 'gorynich_test_local1'
+              },
+              'shared' => {
+                'host' => 'test'
+              }
+            }
+          }
+        )
+      end
+    end
   end
 end

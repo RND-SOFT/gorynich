@@ -67,17 +67,19 @@ module Gorynich
 
       result =
         if env.nil?
-          cfg.to_h do |env, tenant_cfg|
+          cfg.to_h do |cfg_env, tenant_cfg|
             [
-              env,
+              cfg_env,
               tenant_cfg.to_h { |t, c| [t, c.fetch('db_config')] }
             ]
           end
         else
-          cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
+          {
+            env => cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
+          }
         end
 
-      result.to_yaml
+      result.to_yaml.gsub('---', '')
     end
 
     def connects_to_config

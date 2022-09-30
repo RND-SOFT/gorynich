@@ -49,11 +49,11 @@ module Gorynich
       end
     end
 
-    def instance
-      return @instance if @instance
+    def instance(reload: false)
+      return @instance if @instance && !reload
 
       mx.synchronize do
-        @instance ||= initializer.call
+        @instance = initializer.call
       end
     end
 
@@ -95,6 +95,8 @@ module Gorynich
         uri = env['REQUEST_URI']
         [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
       end
+
+      instance(reload: true)
 
       ::ActiveRecord::Base.include(Head::ActiveRecord)
       ::ActionCable::Channel::Base.include(Head::ActionCable::Channel)
