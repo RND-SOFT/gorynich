@@ -7,3 +7,21 @@ task gc: :environment do
     Rails::Console.start(Rails.application)
   end
 end
+
+namespace :gc do
+  namespace :db do
+    desc 'Create static database.yml'
+    task prepare: :environment do
+      database_config = Rails.root.join('config', 'database.yml')
+
+      File.open(database_config, 'w+') do |f|
+        f.write('<%= Gorynich.instance.database_config %>')
+        f.rewind
+
+        database_result = ::ERB.new(f.read).result
+        f.rewind
+        f.write(database_result)
+      end
+    end
+  end
+end

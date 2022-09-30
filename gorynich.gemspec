@@ -6,12 +6,17 @@ require 'gorynich/version'
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
   spec.name        = 'gorynich'
-  spec.version     = Gorynich::VERSION
+  spec.version     =
+    if ENV['BUILDVERSION'].to_i > 0
+      "#{Gorynich::VERSION}.#{ENV['BUILDVERSION'].to_i}"
+    else
+      Gorynich::VERSION
+    end
   spec.authors     = ['Poliev Alexey']
   spec.email       = ['apoliev@rnds.pro']
   spec.summary     = 'Gem for switching databases'
   spec.description = 'Gem for switching databases for multitenancy apps'
-  spec.homepage    = 'https://rnds.pro'
+  spec.homepage    = 'https://br.rnds.pro/ruby/gorynich'
 
   spec.files = Dir['{lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
