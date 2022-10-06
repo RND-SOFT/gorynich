@@ -182,6 +182,22 @@ RSpec.describe Gorynich::Config do
     end
   end
 
+  context 'tenant_by_host' do
+    describe 'when host found' do
+      it do
+        expect(subject.tenant_by_host('localhost')).to eq('local')
+      end
+    end
+
+    describe 'when host not found' do
+      let(:host) { Faker::Internet.domain_name }
+
+      it do
+        expect { subject.tenant_by_host(host) }.to raise_error(Gorynich::HostNotFound)
+      end
+    end
+  end
+
   context '#config' do
     describe 'when tenant found' do
       it do

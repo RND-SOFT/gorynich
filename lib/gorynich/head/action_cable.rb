@@ -1,6 +1,18 @@
 module Gorynich
   module Head
     module ActionCable
+      module Connection
+        extend ::ActiveSupport::Concern
+
+        included do
+          def connect
+            self.host = env['SERVER_NAME']
+            self.tenant = ::Gorynich.instance.tenant_by_host(host)
+            super
+          end
+        end
+      end
+
       module Channel
         extend ::ActiveSupport::Concern
 

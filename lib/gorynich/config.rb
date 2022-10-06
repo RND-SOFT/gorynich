@@ -3,6 +3,8 @@ module Gorynich
     attr_reader :fetcher,
                 :tenants,
                 :databases,
+                :hosts,
+                :uris,
                 :default
 
     def initialize(**opts)
@@ -51,6 +53,23 @@ module Gorynich
       raise UriNotFound, uri.host if search_tenant.nil?
 
       search_tenant
+    end
+
+    def tenant_by_host(host)
+      tenant = hosts.select { |t, h| t if h.include?(host) }.keys.first
+      raise HostNotFound, host if tenant.nil?
+
+      tenant
+    end
+
+    def uri_by_host(host, tenant = nil)
+      tenant ||= tenant_by_host(host)
+      tenant_uris = uris(tenant)
+      search_uri = tenant_uris.select { |uri| uri.include?(host) }.first
+
+      raise UriNotFound, search_uri.host if search_uri.nil?
+
+      search_uri
     end
 
     def config(tenant)

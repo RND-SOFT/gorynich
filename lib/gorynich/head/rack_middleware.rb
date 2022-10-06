@@ -12,8 +12,10 @@ module Gorynich
 
         tenant, opts =
           Gorynich.switcher.analyze(env) do
-            uri = env['REQUEST_URI']
-            [Gorynich.instance.tenant_by_uri(uri), { uri: uri }]
+            host = env['SERVER_NAME']
+            tenant = Gorynich.instance.tenant_by_host(host)
+            uri = Gorynich.instance.uri_by_host(host, tenant)
+            [tenant, { host: host, uri: uri }]
           end
 
         Gorynich.with(tenant, **opts) do
@@ -24,6 +26,9 @@ module Gorynich
           end
         end
       rescue Gorynich::UriNotFound => e
+        Rails.logger.error(e.inspect)
+        [404, { 'Content-Type' => 'text/txt' }, [e.message]]
+      rescue Gorynich::HostNotFound => e
         Rails.logger.error(e.inspect)
         [404, { 'Content-Type' => 'text/txt' }, [e.message]]
       rescue Gorynich::TenantNotFound => e

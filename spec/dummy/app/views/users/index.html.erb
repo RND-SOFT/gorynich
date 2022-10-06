@@ -1,3 +1,7 @@
 <%= @users.inspect %><br>
 <%= Gorynich::Current.tenant %><br>
 <%= Gorynich::Current.secrets %>
+
+<%= form_with(url: user_path(@users.first), method: :patch) do |form| %>
+  <%= form.submit 'test job' %>
+<% end %>

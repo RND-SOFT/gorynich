@@ -31,46 +31,99 @@ module Gorynich
     end
   end
 
+  class HostNotFound < Error
+    attr_reader :host
+
+    def initialize(host, message = nil)
+      @host = host
+
+      super(message || "Host #{@host} not found")
+    end
+  end
+
   class << self
     attr_accessor :configuration
 
+    #
+    # Reload app configuration
+    #
     def reload
-      @instance = Gorynich::Config.new
+      @instance = Config.new
       @switcher = Switcher.new(config: instance)
     end
 
+    #
+    # App configuration
+    #
+    # @return [Gorynich::Config]
+    #
     def instance
-      @instance ||= Gorynich::Config.new
+      @instance ||= Config.new
     end
 
+    #
+    # Tenant switcher
+    #
+    # @return [Gorynich::Switcher]
+    #
     def switcher
       @switcher ||= Switcher.new(config: instance)
     end
 
+    #
+    # Block for performing actions with a tenant database
+    #
+    # @param [String, Symbol] tenant
+    #
     def with_database(*args, &block)
       switcher.with_database(*args, &block)
     end
 
+    #
+    # Block for performing actions with a tenant database with a change in current attributes (ActiveSupport::CurrentAttributes)
+    #
+    # @param [String, Symbol] tenant
+    #
     def with_current(*args, &block)
       switcher.with_current(*args, &block)
     end
 
+    #
+    # Block for performing actions with a tenant database with a change in current attributes (ActiveSupport::CurrentAttributes)
+    #
+    # @param [String, Symbol] tenant
+    # @param [Hash] **opts options for Gorynich::Current
+    #
     def with(*args, **opts, &block)
       switcher.with(*args, **opts, &block)
     end
 
-    def with_each_tenant(&block)
-      switcher.with_each_tenant(&block)
+    #
+    # Block for performing actions with each tenant database
+    #
+    # @param [Array] except Array of tenants with which no actions will be performed
+    #
+    def with_each_tenant(**opts, &block)
+      switcher.with_each_tenant(**opts, &block)
     end
 
+    #
+    # Configuration of gem
+    #
     def configuration
       @configuration ||= Configuration.new
     end
 
+    #
+    # Reset to default configuration settings
+    #
     def reset
       @configuration = Configuration.new
     end
 
+    #
+    # Setting up and initializing the gem
+    #
     def configure
       yield(configuration)
 
