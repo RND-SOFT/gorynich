@@ -28,8 +28,6 @@ test:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
-    reports:
-      junit: rspec*.xml
     name: "coverage"
     paths:
       - .coverage
