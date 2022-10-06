@@ -12,7 +12,7 @@ RSpec.describe Gorynich::Fetchers::Consul do
   end
 
   context '#consul_opts' do
-    let(:consul_opts) { { Faker::Lorem.word => Faker::Lorem.word } }
+    let(:consul_opts) { { Faker::Lorem.word.to_sym => Faker::Lorem.word } }
 
     subject { described_class.new(storage: storage, **consul_opts) }
 
