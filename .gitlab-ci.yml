@@ -31,6 +31,7 @@ test:
     COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
     GIT_BRANCH: ${CI_COMMIT_REF_NAME}
     GIT_COMMIT: ${CI_COMMIT_SHA}
+    CASE: "2.6"
   script:
     - docker-compose build --force-rm --pull gemtestbase-${CASE}
     - docker-compose build --force-rm test-${CASE}
