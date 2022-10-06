@@ -24,7 +24,6 @@ test:
     - docker exec $DOCKER_CONTAINER_ID bundle exec rails db:create db:migrate
     - docker exec $DOCKER_CONTAINER_ID bundle exec rspec | tee .coverage
     - docker cp $DOCKER_CONTAINER_ID:/home/app/coverage ./coverage
-    - docker cp $DOCKER_CONTAINER_ID:/home/app/rspec.xml rspec-${CASE}.xml
   after_script:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
