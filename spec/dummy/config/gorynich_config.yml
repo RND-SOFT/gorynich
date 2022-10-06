@@ -1,7 +1,7 @@
 db_config: &db_config
   adapter: postgresql
   encoding: unicode
-  host: <%= ENV.fetch("DB_HOST", 'localhost') %>
+  host: <%= ENV.fetch("DB_HOST", 'db') %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   port: <%= ENV.fetch("DB_PORT", '5432') %>
   username: <%= ENV.fetch('DB_USERNAME', 'postgres') %>
