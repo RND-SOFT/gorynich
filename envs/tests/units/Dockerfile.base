@@ -1,0 +1,10 @@
+ARG BASE_IMAGE=ruby:2.6-alpine
+ARG BUILDKIT_INLINE_CACHE=1
+
+FROM ${BASE_IMAGE}
+ARG BUILDKIT_INLINE_CACHE=1
+
+WORKDIR /home/app
+
+RUN set -ex \
+  && apk add --no-cache build-base git curl postgresql-dev postgresql-client libstdc++ libxml2
