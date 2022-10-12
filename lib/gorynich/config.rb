@@ -7,6 +7,11 @@ module Gorynich
                 :uris,
                 :default
 
+    #
+    # Create instance of config
+    #
+    # @param [Fetcher] fetcher data loader
+    #
     def initialize(**opts)
       @default = 'default'
       @fetcher = opts.fetch(:fetcher, Fetcher.new)
@@ -15,6 +20,9 @@ module Gorynich
       actualize
     end
 
+    #
+    # Update configs from data source
+    #
     def actualize
       cfg = fetcher.fetch.fetch(Rails.env)
 
@@ -27,6 +35,13 @@ module Gorynich
       end
     end
 
+    #
+    # Database config
+    #
+    # @param [String, Symbol] tenant
+    #
+    # @return [Hash]
+    #
     def database(tenant)
       databases.fetch(tenant.to_s)
     rescue StandardError
@@ -44,6 +59,13 @@ module Gorynich
       end
     end
 
+    #
+    # Find tenant by URI
+    #
+    # @param [String] uri
+    #
+    # @return [String]
+    #
     def tenant_by_uri(uri)
       uri = URI(uri)
       search_tenant = uris.select do |tenant, tenant_uris|
@@ -55,6 +77,13 @@ module Gorynich
       search_tenant
     end
 
+    #
+    # Find tenant by host
+    #
+    # @param [String] host
+    #
+    # @return [String]
+    #
     def tenant_by_host(host)
       tenant = hosts.select { |t, h| t if h.include?(host) }.keys.first
       raise HostNotFound, host if tenant.nil?
@@ -62,6 +91,14 @@ module Gorynich
       tenant
     end
 
+    #
+    # Find URI by host
+    #
+    # @param [String] host
+    # @param [String, Symbol] tenant tenant of config (optional)
+    #
+    # @return [String]
+    #
     def uri_by_host(host, tenant = nil)
       tenant ||= tenant_by_host(host)
       tenant_uris = uris(tenant)
@@ -72,6 +109,13 @@ module Gorynich
       search_uri
     end
 
+    #
+    # Full config from data source by tenant
+    #
+    # @param [String, Symbol] tenant
+    #
+    # @return [Hash]
+    #
     def config(tenant)
       {
         tenant: tenant.to_s,
@@ -80,6 +124,13 @@ module Gorynich
       }
     end
 
+    #
+    # Database config for database.yml
+    #
+    # @param [String] env enviroment
+    #
+    # @return [String] yaml result
+    #
     def database_config(env = nil)
       envs = Dir.glob(Rails.root.join('config/environments/*.rb').to_s).map { |f| File.basename(f, '.rb') }
       cfg = fetcher.fetch.extract!(*envs)
@@ -101,6 +152,11 @@ module Gorynich
       result.to_yaml.gsub('---', '')
     end
 
+    #
+    # For connection to ActiveRecord
+    #
+    # @return [Hash]
+    #
     def connects_to_config
       actualize
       tenants.to_h { |t| [t.to_sym, t.to_sym] }
