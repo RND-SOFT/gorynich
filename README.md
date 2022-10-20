@@ -61,6 +61,44 @@
   rails gc:db:prepare
 ```
 
+### Настройка конфигурации БД
+
+Работать с `database.yml` можно 3-мя способами:
+
+1. Создать статичный файл `database.yml`:
+
+```bash
+  rails gc:db:prepare
+```
+
+`database.yml` будет заполнен конфигурациями тенантов из источника данных (Fetcher)
+
+2. В `database.yml` прописать следующее
+
+  ```yaml
+  <%= Gorynich.instance.database_config %>
+  ```
+
+При такой конфигурации динамически будут создаваться конфигурации тенантов. Но при этом не будет работать таска `rollback` (`db:create` `db:migrate` работают).
+
+3. Если вам нужны дополнительные БД, не являющимися тенантами, например, общая БД, то в `database.yml` нужно прописать следующее:
+
+ ```yaml
+  <%= Gorynich.instance.database_config('development') %>
+    your_database:
+      <<: *configs_for_your_database
+
+  <%= Gorynich.instance.database_config('test') %>
+    your_database:
+      <<: *configs_for_your_database
+
+  <%= Gorynich.instance.database_config('production') %>
+    your_database:
+      <<: *configs_for_your_database
+  ```
+
+Как и во 2-ом случае, будет динамически создаваться конфигурация тенантов и не работать таска `rollback`.
+
 ### В коде
 Проверить в каком вы тенанте можно с помощью
 
