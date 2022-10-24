@@ -6,15 +6,13 @@ stages:
 variables:
   BUILDVERSION: ${CI_PIPELINE_ID}
 
-test:
-  image: rnds/ruby:2.6-test
+.test:
   stage: tests
   variables:
     COMPOSE_FILE: envs/tests/units/docker-compose.yml
     COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
     GIT_BRANCH: ${CI_COMMIT_REF_NAME}
     GIT_COMMIT: ${CI_COMMIT_SHA}
-    CASE: "2.6"
   script:
     - docker-compose build --force-rm --pull gemtestbase-${CASE}
     - docker-compose build --force-rm test-${CASE}
@@ -32,6 +30,18 @@ test:
     paths:
       - .coverage
       - coverage
+
+ruby-2.6:
+  extends: .test
+  image: rnds/ruby:2.6-test
+  variables:
+    CASE: "2.6"
+
+ruby-3.0:
+  extends: .test
+  image: rnds/ruby:3.0-test
+  variables:
+    CASE: "3.0"
 
 build:
   image: rnds/ruby:2.6-test
@@ -55,7 +65,7 @@ publish:
   image: rnds/ruby:2.6-test
   stage: deploy
   variables:
-    GEM_REPOSITORY: "https://library.rnds.pro/repository/internal"
+    GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
   script:
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
