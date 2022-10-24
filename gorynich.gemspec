@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Gem for switching databases for multitenancy apps'
   spec.homepage    = 'https://br.rnds.pro/ruby/gorynich'
 
-  spec.files = Dir['{lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+  spec.files = Dir['{config}/**/*', '{lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
   spec.add_dependency 'diplomat', '~> 2'
   spec.add_dependency 'rails', '~> 6.1'

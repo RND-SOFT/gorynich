@@ -17,7 +17,7 @@ module Gorynich
     def initialize(tenant, message = nil)
       @tenant = tenant
 
-      super(message || "Tenant #{@tenant} not found")
+      super(message || I18n.t('gorynich.tenant_not_found', tenant: @tenant, default: "Tenant #{@tenant} not found"))
     end
   end
 
@@ -27,7 +27,7 @@ module Gorynich
     def initialize(uri, message = nil)
       @uri = uri
 
-      super(message || "URI #{@uri} not found")
+      super(message || I18n.t('gorynich.uri_not_found', uri: @tenant, default: "URI #{@uri} not found"))
     end
   end
 
@@ -37,7 +37,7 @@ module Gorynich
     def initialize(host, message = nil)
       @host = host
 
-      super(message || "Host #{@host} not found")
+      super(message || I18n.t('gorynich.host_not_found', host: @host, default: "Host #{@host} not found"))
     end
   end
 
