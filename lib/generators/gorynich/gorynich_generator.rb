@@ -2,7 +2,7 @@
 module Gorynich
   module Generators
     class GorynichGenerator < Rails::Generators::NamedBase
-      namespace 'devise'
+      namespace 'gorynich'
     end
   end
 end
