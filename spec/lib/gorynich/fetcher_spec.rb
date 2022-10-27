@@ -92,7 +92,7 @@ RSpec.describe Gorynich::Fetcher do
         before(:each) { consul_request(consul_response, 500) }
 
         it do
-          expect(subject.fetch).to include('development', 'test')
+          expect { subject.fetch }.to raise_error(Diplomat::UnknownStatus)
         end
       end
     end

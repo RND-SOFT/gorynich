@@ -13,8 +13,6 @@ module Gorynich
       def fetch
         config = ::Diplomat::Kv.get_all(storage, convert_to_hash: true, **consul_opts)
         config.dig(*storage.split('/')) || {}
-      rescue ::StandardError
-        {}
       end
     end
   end

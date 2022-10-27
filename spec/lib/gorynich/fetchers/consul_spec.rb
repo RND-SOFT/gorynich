@@ -53,7 +53,7 @@ RSpec.describe Gorynich::Fetchers::Consul do
       end
 
       it do
-        expect(subject.fetch).to eq({})
+        expect { subject.fetch }.to raise_error(Diplomat::UnknownStatus)
       end
     end
   end
