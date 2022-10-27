@@ -1,0 +1,101 @@
+stages:
+  - tests
+  - build
+  - deploy
+
+variables:
+  BUILDVERSION: ${CI_PIPELINE_ID}
+
+.test:
+  stage: tests
+  variables:
+    COMPOSE_FILE: envs/tests/units/docker-compose.yml
+    COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
+    GIT_BRANCH: ${CI_COMMIT_REF_NAME}
+    GIT_COMMIT: ${CI_COMMIT_SHA}
+  script:
+    - docker-compose build --force-rm --pull gemtestbase-${CASE}
+    - docker-compose build --force-rm test-${CASE}
+    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
+
+    - DOCKER_CONTAINER_ID=`docker-compose ps -q test-${CASE} | head -n 1`
+    - docker exec $DOCKER_CONTAINER_ID bundle exec rails db:create db:migrate
+    - docker exec $DOCKER_CONTAINER_ID bundle exec rspec | tee .coverage
+    - docker cp $DOCKER_CONTAINER_ID:/home/app/coverage ./coverage
+  after_script:
+    - docker-compose down -v --remove-orphans
+  coverage: '/\(\d+.\d+\%\) covered/'
+  artifacts:
+    name: "coverage"
+    paths:
+      - .coverage
+      - coverage
+
+ruby-2.6:
+  extends: .test
+  image: rnds/ruby:2.6-test
+  variables:
+    CASE: "2.6"
+
+ruby-3.0:
+  extends: .test
+  image: rnds/ruby:3.0-test
+  variables:
+    CASE: "3.0"
+
+build:
+  image: rnds/ruby:2.6-test
+  stage: build
+  script:
+    - gem sources --add https://${GEM_STORAGE_CREDS}@library.rnds.pro/repository/internal/
+    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
+    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'`
+  cache:
+    paths:
+      - vendor/bundle
+      - vendor/cache
+  artifacts:
+    name: "gem"
+    paths:
+      - ./*.gem
+      - coverage/*
+      - rubycritic/*
+
+publish:
+  image: rnds/ruby:2.6-test
+  stage: deploy
+  variables:
+    GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
+  script:
+    - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
+  only:
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
+
+badges:
+  image: rnds/ruby:2.6-test
+  stage: deploy
+  allow_failure: true
+  variables:
+    BRANCH_LOCK: ci/${CI_PROJECT_NAME}/${CI_COMMIT_REF_SLUG}
+    ENV_LOCK: ci/${CI_PROJECT_NAME}/${CI_ENVIRONMENT_SLUG}
+    BADGES_URL: https://lysander.rnds.pro/api/v1/badges/gorynich
+  script:
+    - bundle audit update
+    - bundle audit || true
+    - bundle outdated --only-explicit --no-pre --group default || true
+
+    - version=$(ruby -e "require 'rubygems'; puts Gem::Specification::load('gorynich.gemspec').version") || true
+    - vulnerable=$(bundle audit | grep "Name:" | sort | uniq | wc -l) || true
+    - outdated=$(bundle outdated --only-explicit --no-pre --group default | grep "*" | wc -l) || true
+    - quality=$(rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2) || true
+    - coverage=$(cat .coverage | ruby -e 'puts /\((\d+.\d+)\%\) covered/.match(STDIN.read)[1]') || true
+
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"version\", \"color\":\"blue\", \"icon\":\"ruby&logoColor\", \"message\":\"${version}\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_version.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"vulnerable\", \"color\":\"red\", \"message\":\"${vulnerable} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_vulnerable.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
+  only:
+    - master

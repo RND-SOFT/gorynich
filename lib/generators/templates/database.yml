@@ -1,0 +1,3 @@
+<%= Gorynich.instance.database_config('development') %>
+
+<%= Gorynich.instance.database_config('test') %>

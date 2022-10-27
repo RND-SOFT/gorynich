@@ -1,0 +1,80 @@
+version: "2.3"
+
+x-cache-build: &cb
+  context: ${PWD-./}
+  dockerfile: envs/tests/units/Dockerfile.base
+  cache_from:
+    - gemtestbase:2.6
+    - gorynich-tests:2.6
+    - gemtestbase:3.0
+    - gorynich-tests:3.0
+
+x-build: &build
+  context: ${PWD-./}
+  dockerfile: envs/tests/units/Dockerfile
+
+services:
+  db:
+    image: postgres:10-alpine
+    restart: 'no'
+    stop_grace_period: 2s
+    tmpfs: 
+      - /tmp:size=100m
+      - /var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - bus
+
+  gemtestbase-2.6:
+    build:
+      <<: *cb
+      args:
+        BASE_IMAGE: ruby:2.6-alpine
+        BUILDKIT_INLINE_CACHE: 1
+    image: gemtestbase:2.6
+    working_dir: /home/app
+    networks:
+      - bus
+    
+  test-2.6:
+    build:
+      <<: *build
+      args:
+        BUILD_TAG: 2.6
+        GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
+    depends_on:
+      - db
+      - gemtestbase-2.6
+    image: gorynich-tests:2.6
+    working_dir: /home/app
+    networks:
+      - bus
+
+  gemtestbase-3.0:
+    build:
+      <<: *cb
+      args:
+        BASE_IMAGE: ruby:3.0-alpine
+        BUILDKIT_INLINE_CACHE: 1
+    image: gemtestbase:3.0
+    working_dir: /home/app
+    networks:
+      - bus
+    
+  test-3.0:
+    build:
+      <<: *build
+      args:
+        BUILD_TAG: 3.0
+        GEM_STORAGE_AUTH: ${NEXUS_AUTH-unknown}
+    depends_on:
+      - db
+      - gemtestbase-3.0
+    image: gorynich-tests:3.0
+    working_dir: /home/app
+    networks:
+      - bus
+      
+networks:
+  bus:

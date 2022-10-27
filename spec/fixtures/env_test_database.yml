@@ -1,0 +1,7 @@
+<%= Gorynich.instance.database_config('development') %>
+  shared:
+    host: dev
+
+<%= Gorynich.instance.database_config('test') %>
+  shared:
+    host: test

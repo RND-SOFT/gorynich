@@ -1,0 +1,9 @@
+<%= @users.inspect %><br>
+<%= Gorynich::Current.tenant %><br>
+<%= Gorynich::Current.secrets %>
+
+<% if @users.present? %>
+  <%= form_with(url: user_path(@users.first), method: :patch) do |form| %>
+    <%= form.submit 'test job' %>
+  <% end %>
+<% end %>

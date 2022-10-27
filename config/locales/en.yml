@@ -1,0 +1,6 @@
+en:
+  gorynich:
+    tenant_not_found: Tenant %{tenant} not found
+    host_not_found: Host %{host} not found
+    uri_not_found: URI %{uri} not found
+    internal_error: Gorynich internal error
