@@ -27,17 +27,17 @@ module Gorynich
         end
       rescue Gorynich::UriNotFound => e
         Rails.logger.error(e.inspect)
-        [404, { 'Content-Type' => 'text/txt', 'charset' => 'UTF-8' }, [e.message]]
+        [404, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [e.message]]
       rescue Gorynich::HostNotFound => e
         Rails.logger.error(e.inspect)
-        [404, { 'Content-Type' => 'text/txt', 'charset' => 'UTF-8' }, [e.message]]
+        [404, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [e.message]]
       rescue Gorynich::TenantNotFound => e
         Rails.logger.error(e.inspect)
-        [404, { 'Content-Type' => 'text/txt', 'charset' => 'UTF-8' }, [e.message]]
+        [404, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [e.message]]
       rescue StandardError => e
         Rails.logger.error("Gorynich Error: #{e.inspect}")
         Rails.logger.debug(e.backtrace)
-        [500, { 'Content-Type' => 'text/txt', 'charset' => 'UTF-8' }, [I18n.t(
+        [500, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [I18n.t(
           'gorynich.internal_error', default: 'Gorynich internal error'
         )]]
       end

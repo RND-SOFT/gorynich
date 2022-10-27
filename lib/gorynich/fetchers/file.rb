@@ -12,8 +12,6 @@ module Gorynich
 
       def fetch
         ::YAML.load(::ERB.new(::File.read(file_path)).result) || {}
-      rescue ::StandardError
-        {}
       end
     end
   end

@@ -16,7 +16,7 @@ RSpec.describe Gorynich::Fetchers::File do
       let(:file_path) { Faker::Lorem.word }
 
       it do
-        expect(subject.fetch).to eq({})
+        expect { subject.fetch }.to raise_error(Errno::ENOENT)
       end
     end
 
