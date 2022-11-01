@@ -20,7 +20,6 @@ ADD lib/gorynich/version.rb /home/app/lib/gorynich/
 ADD spec/dummy/config/database.yml /home/app/spec/dummy/config/database.yml
 
 RUN set -ex \
-  && gem source --add https://${GEM_STORAGE_AUTH}@library.rnds.pro/repository/internal/ \
   && gem install bundler && gem update bundler \
   && bundle install --jobs=3 --full-index \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache

@@ -1,5 +1,4 @@
-source 'https://rubygems.org'
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+source 'https://library.rnds.pro/repository/rubygems'
 
 # Declare your gem's dependencies in gorynich.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
