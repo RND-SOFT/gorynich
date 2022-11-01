@@ -47,7 +47,6 @@ build:
   image: rnds/ruby:2.6-test
   stage: build
   script:
-    - gem sources --add https://${GEM_STORAGE_CREDS}@library.rnds.pro/repository/internal/
     - bundle install --jobs=3 --path vendor/bundle && bundle package --all
     - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'`
   cache:
