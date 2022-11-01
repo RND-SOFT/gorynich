@@ -23,8 +23,7 @@ RUN set -ex \
   && apk add --no-cache ca-certificates curl \
   && curl -k https://rnds.pro/bundle_ca.crt --output /usr/local/share/ca-certificates/bundle_ca.crt \
   && cat /usr/local/share/ca-certificates/bundle_ca.crt >> /etc/ssl/certs/ca-certificates.crt \
-  && ls -la; echo $BUILD_TAG \
-  && cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/ruby/${RUBY_VERSION}/rubygems/ssl_certs/rubygems.org/ca-certificates.pem \
+  && cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/ruby/$(echo $RUBY_VERSION | sed 's/\.[0-9]*$//').0/rubygems/ssl_certs/rubygems.org/ca-certificates.pem \
   && update-ca-certificates
 
 RUN set -ex \
