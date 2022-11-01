@@ -24,7 +24,7 @@ RUN set -ex \
   && curl -k https://rnds.pro/bundle_ca.crt --output /usr/local/share/ca-certificates/bundle_ca.crt \
   && cat /usr/local/share/ca-certificates/bundle_ca.crt >> /etc/ssl/certs/ca-certificates.crt \
   && ls -la /usr/local/lib/ruby \
-  && cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/ruby/${RUBY_VERSION}/rubygems/ssl_certs/rubygems.org/ca-certificates.pem \
+  && cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/ruby/$(echo $RUBY_VERSION | grep -oP "\d{1}\.\d{1}").0/rubygems/ssl_certs/rubygems.org/ca-certificates.pem \
   && update-ca-certificates
 
 RUN set -ex \
