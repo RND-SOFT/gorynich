@@ -20,13 +20,6 @@ ADD lib/gorynich/version.rb /home/app/lib/gorynich/
 ADD spec/dummy/config/database.yml /home/app/spec/dummy/config/database.yml
 
 RUN set -ex \
-  && apk add --no-cache ca-certificates curl \
-  && curl -k https://rnds.pro/bundle_ca.crt --output /usr/local/share/ca-certificates/bundle_ca.crt \
-  && cat /usr/local/share/ca-certificates/bundle_ca.crt >> /etc/ssl/certs/ca-certificates.crt \
-  && cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/ruby/$(echo $RUBY_VERSION | sed 's/\.[0-9]*$//').0/rubygems/ssl_certs/rubygems.org/ca-certificates.pem \
-  && update-ca-certificates
-
-RUN set -ex \
   && gem source --add https://${GEM_STORAGE_AUTH}@library.rnds.pro/repository/internal/ \
   && gem install bundler && gem update bundler \
   && bundle install --jobs=3 --full-index \
