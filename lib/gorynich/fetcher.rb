@@ -32,7 +32,12 @@ module Gorynich
         elsif @fetcher.is_a?(Array)
           result = {}
           @fetcher.each do |f|
-            result = f.fetch
+            result = 
+              begin
+                f.fetch
+              rescue ::StandardError
+                {}
+              end
             break unless result.empty?
           end
           result
