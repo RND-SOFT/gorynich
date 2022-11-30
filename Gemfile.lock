@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    gorynich (0.1.0)
+    gorynich (0.1.2)
       diplomat (~> 2)
       rails (~> 6.1)
 
 GEM
-  remote: https://rubygems.org/
+  remote: https://library.rnds.pro/repository/rubygems/
   specs:
     actioncable (6.1.6.1)
       actionpack (= 6.1.6.1)
@@ -90,10 +90,10 @@ GEM
       railties (>= 5.0.0)
     faker (2.23.0)
       i18n (>= 1.8.11, < 2)
-    faraday (2.5.2)
+    faraday (2.7.1)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
-    faraday-net_http (3.0.0)
+    faraday-net_http (3.0.2)
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)

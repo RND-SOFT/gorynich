@@ -6,7 +6,7 @@ module Gorynich
                   :cache_expiration
 
     def initialize
-      @cache = ActiveSupport::Cache::MemoryStore.new
+      @cache = ActiveSupport::Cache::NullStore.new
       @fetcher = nil
       @namespace = nil
       @cache_expiration = 30

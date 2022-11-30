@@ -22,7 +22,7 @@
 
 ### Настройка источника данных
 
-Для использования необходимо в файле `config/initializer/gorynich.rb` добавить источник данных. Сейчас доступны 2 источника:
+Для использования необходимо в файле `config/application.rb` добавить источник данных. Сейчас доступны 2 источника:
 
 ```ruby
   Gorynich::Fetchers::File.new(file_path: [FILE_PATH]) # из файла
@@ -34,17 +34,13 @@
 
 ```ruby
   # из одного
-  Gorynich.configure do |config|
-    config.fetcher = Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
-  end
+  Gorynich.configuration.fetcher = Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
 
   # из нескольких (данные берутся от первого успешного fetcher)
-  Gorynich.configure do |config|
-    config.fetcher = [
-      Gorynich::Fetchers::Consul.new(storage: 'gorynich_project/config'),
-      Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
-    ]
-  end
+  Gorynich.configuration.fetcher  = [
+    Gorynich::Fetchers::Consul.new(storage: 'gorynich_project/config'),
+    Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
+  ]
 ```
 
 ### Tasks
