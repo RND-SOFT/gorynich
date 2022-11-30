@@ -89,7 +89,10 @@ RSpec.describe Gorynich::Fetcher do
       end
 
       describe 'when consul fetch failed' do
-        before(:each) { consul_request(consul_response, 500) }
+        before(:each) do
+          Gorynich.configuration.cache = ActiveSupport::Cache::MemoryStore.new
+          consul_request(consul_response, 500)
+        end
 
         it do
           expect(subject.fetch).to include('development', 'test')

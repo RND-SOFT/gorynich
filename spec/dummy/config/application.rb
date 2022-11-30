@@ -21,6 +21,11 @@ module Dummy
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    config.cache_store = :file_store, Rails.root.join('tmp', 'cache')
+
+    Gorynich.configuration.fetcher = 
+      Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading

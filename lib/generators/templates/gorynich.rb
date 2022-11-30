@@ -8,10 +8,6 @@ Gorynich.configure do |config|
 
   # config how long your cache will be alive in seconds
   # config.cache_expiration = 30
-
-  # config data sources
-  # if it will be array then the data will be taken from the first successful fetch
-  config.fetcher = Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
 end
 
 # Add cable head
