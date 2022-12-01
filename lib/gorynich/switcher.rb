@@ -4,9 +4,11 @@ module Gorynich
       @config = config
     end
 
-    def analyze(env, &block)
-      tenant, opts = block.call(env)
-      [tenant, opts || {}]
+    def analyze(env)
+      host = env['SERVER_NAME']
+      tenant = Gorynich.instance.tenant_by_host(host)
+      uri = Gorynich.instance.uri_by_host(host, tenant)
+      [tenant, { host: host, uri: uri }]
     end
 
     def with_database(tenant)
