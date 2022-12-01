@@ -3,6 +3,14 @@ Gorynich.configure do |config|
   # config cache of gorynich
   config.cache = Rails.cache
 
+  config.rack_env_handler =
+    lambda do |env|
+      host = env['SERVER_NAME']
+      tenant = Gorynich.instance.tenant_by_host(host)
+      uri = Gorynich.instance.uri_by_host(host, tenant)
+      [tenant, { host: host, uri: uri }]
+    end
+
   # config cache namespace
   # config.namespace = 'gorynich'
 

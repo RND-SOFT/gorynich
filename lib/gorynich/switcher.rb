@@ -5,6 +5,8 @@ module Gorynich
     end
 
     def analyze(env)
+      return Gorynich.configuration.rack_env_handler.call(env) unless Gorynich.configuration.rack_env_handler.nil?
+
       host = env['SERVER_NAME']
       tenant = Gorynich.instance.tenant_by_host(host)
       uri = Gorynich.instance.uri_by_host(host, tenant)

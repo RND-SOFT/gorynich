@@ -8,6 +8,12 @@ Gorynich.configure do |config|
 
   # config how long your cache will be alive in seconds
   # config.cache_expiration = 30
+
+  # handler for gorynich rack middleware
+  # config.rack_env_handler =
+  #   lambda do |env|
+  #     # your code
+  #   end
 end
 
 # Add cable head
