@@ -16,8 +16,11 @@ module Gorynich
           @current_tenant = job_data.fetch(:tenant)
         end
 
-        around_perform do |_job, block|
-          Gorynich.with(Gorynich::Current.tenant, uri: Gorynich::Current.uri) do |_current|
+        around_perform do |job, block|
+          Gorynich.with(
+            job.current_tenant || Gorynich::Current.tenant,
+            uri: job.current_uri || Gorynich::Current.uri
+          ) do |_current|
             block.call
           end
         end
