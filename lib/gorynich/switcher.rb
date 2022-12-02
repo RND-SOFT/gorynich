@@ -4,6 +4,13 @@ module Gorynich
       @config = config
     end
 
+    #
+    # Hander for rack middleware's variables
+    #
+    # @param [Hash] env middleware's variables
+    #
+    # @return [[String, Hash]] tenant, options
+    #
     def analyze(env)
       return Gorynich.configuration.rack_env_handler.call(env) unless Gorynich.configuration.rack_env_handler.nil?
 
