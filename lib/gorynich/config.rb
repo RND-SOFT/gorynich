@@ -180,14 +180,27 @@ module Gorynich
     end
 
     def uris_from_config(secrets_by_tenant)
-      secrets_by_tenant.to_h { |tenant, secrets| [tenant, secrets.fetch('uris', [])] }
+      secrets_by_tenant.to_h { |tenant, secrets| [tenant, processed_uris(secrets)] }
     end
 
     def hosts_from_config(secrets_by_tenant)
       secrets_by_tenant.to_h do |tenant, secrets|
-        hosts = secrets.fetch('uris', []).map { |uri| URI(uri).host }
+        hosts = processed_uris(secrets).map { |uri| URI(uri).host }
         [tenant, hosts]
       end
+    end
+
+    # consul KV can store only array into json string, so need to parse
+    def processed_uris(secrets)
+      uris = secrets.fetch('uris', [])
+      return uris if uris.is_a?(Array)
+
+      uris = JSON.parse(uris)
+      return uris if uris.is_a?(Array)
+
+      []
+    rescue JSON::ParserError, TypeError
+      []
     end
   end
 end
