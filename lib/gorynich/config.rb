@@ -195,12 +195,7 @@ module Gorynich
       uris = secrets.fetch('uris', [])
       return uris if uris.is_a?(Array)
 
-      uris = JSON.parse(uris)
-      return uris if uris.is_a?(Array)
-
-      []
-    rescue JSON::ParserError, TypeError
-      []
+      JSON.parse(uris)
     end
   end
 end
