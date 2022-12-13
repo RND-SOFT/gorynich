@@ -159,7 +159,9 @@ module Gorynich
     #
     def connects_to_config
       actualize
-      tenants.to_h { |t| [t.to_sym, t.to_sym] }
+      tenants.each_with_object({ default: :default }) do |tenant, cfg|
+        cfg[tenant.to_sym] = tenant.to_sym
+      end
     end
 
     private
