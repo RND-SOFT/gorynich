@@ -194,10 +194,30 @@ module Gorynich
 
     # consul KV can store only array into json string, so need to parse
     def processed_uris(secrets)
-      uris = secrets.fetch('uris', [])
-      return uris if uris.is_a?(Array)
+      secrets_uris = secrets.fetch('uris', [])
+      return secrets_uris if secrets_uris.empty?
 
-      JSON.parse(uris)
+      if secrets_uris.is_a?(Array)
+        validate_uris(secrets_uris)
+        return secrets_uris
+      end
+
+      secrets_uris = JSON.parse(secrets_uris)
+      validate_uris(secrets_uris)
+      secrets_uris
+    rescue JSON::ParserError => e
+      raise ConfigError, 'URI parse error. Must be an array of URI'
+    end
+
+    def valid_url?(uri)
+      uri = URI.parse(uri)
+      !!uri.host && !!uri.scheme
+    rescue URI::InvalidURIError
+      false
+    end
+
+    def validate_uris(secrets_uris)
+      secrets_uris.each { |uri| raise ConfigError, 'URI parse error. Must be an array of URI' unless valid_url?(uri) }
     end
   end
 end

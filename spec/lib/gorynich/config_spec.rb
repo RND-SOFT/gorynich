@@ -120,6 +120,16 @@ RSpec.describe Gorynich::Config do
         expect { subject.uris("default#{Faker::Lorem.word}") }.to raise_error(Gorynich::TenantNotFound)
       end
     end
+
+    describe 'when parsing wrong config' do
+      let(:file_path) { "#{RSPEC_ROOT}/fixtures/fetchers/wrong_file_config.yml" }
+
+      it do
+        expect { described_class.new(fetcher: Gorynich::Fetchers::File.new(file_path: file_path)) }.to raise_error(
+          Gorynich::ConfigError
+        )
+      end
+    end
   end
 
   context '#hosts' do
