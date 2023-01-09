@@ -41,6 +41,8 @@ module Gorynich
     end
   end
 
+  class ConfigError < Error; end
+
   class << self
     attr_accessor :configuration
 

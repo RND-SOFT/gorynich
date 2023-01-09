@@ -35,12 +35,10 @@ test:
       <<: *db_config
       database: gorynich_test_local
     secrets:
-      uris:
-        - http://localhost:3000
+      uris: "wrong_uri"
   local1:
     db_config:
       <<: *db_config
       database: gorynich_test_local1
     secrets:
-      uris:
-        - http://test.local
+      uris: ''
