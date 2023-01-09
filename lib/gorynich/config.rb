@@ -195,9 +195,10 @@ module Gorynich
     # consul KV can store only array into json string, so need to parse
     def processed_uris(secrets)
       secrets_uris = secrets.fetch('uris', [])
-      return secrets_uris if secrets_uris.empty?
+      is_array = secrets_uris.is_a?(Array)
+      return secrets_uris if is_array && secrets_uris.empty?
 
-      if secrets_uris.is_a?(Array)
+      if is_array
         validate_uris(secrets_uris)
         return secrets_uris
       end
