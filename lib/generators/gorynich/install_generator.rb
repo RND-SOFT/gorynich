@@ -13,11 +13,11 @@ module Gorynich
       end
 
       def copy_config
-        template 'gorynich_config.yml', Rails.root.join('config', 'gorynich_config.yml.test')
+        template 'gorynich_config.yml', Rails.root.join('config', 'gorynich_config.yml.example')
       end
 
       def copy_database_config
-        copy_file 'database.yml', Rails.root.join('config', 'database.yml.test')
+        copy_file 'database.yml', Rails.root.join('config', 'database.yml.example')
       end
     end
   end

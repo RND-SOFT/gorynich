@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gorynich (0.1.7)
+    gorynich (0.1.8)
       diplomat (~> 2)
       rails (~> 6.1)
 
@@ -103,7 +103,7 @@ GEM
     loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.8.0)
+    mail (2.8.0.1)
       mini_mime (>= 0.1.1)
       net-imap
       net-pop
