@@ -13,9 +13,9 @@ module Gorynich
       def fetch
         data = ::ERB.new(::File.read(file_path)).result
 
-        ::YAML.load(data, aliases: true)
+        ::YAML.load(data, aliases: true) || {}
       rescue ArgumentError
-        ::YAML.load(data)
+        ::YAML.load(data) || {}
       end
     end
   end
