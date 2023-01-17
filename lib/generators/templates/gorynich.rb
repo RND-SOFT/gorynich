@@ -22,7 +22,7 @@ end
 # end
 #
 # ActiveSupport.on_load(:action_cable_channel) do
-#   include Gorynich::Head::ActionCable::Channel
+#   prepend Gorynich::Head::ActionCable::Channel
 # end
 
 # Add active job head

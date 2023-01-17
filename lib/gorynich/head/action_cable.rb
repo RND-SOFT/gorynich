@@ -5,41 +5,38 @@ module Gorynich
         extend ::ActiveSupport::Concern
 
         included do
+          attr_reader :host, :tenant
+
           def connect
-            self.host = env['SERVER_NAME']
-            self.tenant = ::Gorynich.instance.tenant_by_host(host)
-            super
+            @host = env['SERVER_NAME']
+            @tenant = ::Gorynich.instance.tenant_by_host(@host)
           end
         end
       end
 
       module Channel
-        extend ::ActiveSupport::Concern
-
-        included do
-          def subscribe_to_channel(*args)
-            Gorynich.with(tenant, domain: domain) do
-              super
-            end
+        def subscribe_to_channel(*args)
+          ::Gorynich.with(tenant, host: host) do
+            super
           end
+        end
 
-          def unsubscribe_from_channel(*args)
-            Gorynich.with(tenant, domain: domain) do
-              super
-            end
+        def unsubscribe_from_channel(*args)
+          ::Gorynich.with(tenant, host: host) do
+            super
           end
+        end
 
-          def perform_action(*args)
-            Gorynich.with(tenant, domain: domain) do
-              super
-            end
+        def perform_action(*args)
+          ::Gorynich.with(tenant, host: host) do
+            super
           end
+        end
 
-          def self.broadcasting_for(model)
-            raise 'unable to broadcast message without tenant' if Gorynich::Current.tenant.nil?
+        def self.broadcasting_for(model)
+          raise 'unable to broadcast message without tenant' if ::Gorynich::Current.tenant.nil?
 
-            serialize_broadcasting([channel_name, Gorynich::Current.tenant, model])
-          end
+          serialize_broadcasting([channel_name, ::Gorynich::Current.tenant, model])
         end
       end
     end
