@@ -20,10 +20,6 @@ end
 # ActiveSupport.on_load(:action_cable_connection) do
 #   include Gorynich::Head::ActionCable::Connection
 # end
-#
-# ActiveSupport.on_load(:action_cable_channel) do
-#   include Gorynich::Head::ActionCable::Channel
-# end
 
 # Add active job head
 # ActiveSupport.on_load(:active_job) do
