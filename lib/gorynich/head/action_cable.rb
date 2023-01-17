@@ -14,7 +14,7 @@ module Gorynich
         end
       end
 
-      class Channel < ::ActionCable::Channel::Base
+      module Channel
         def subscribe_to_channel(*args)
           ::Gorynich.with(tenant, host: host) do
             super
