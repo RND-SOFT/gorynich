@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gorynich (0.1.9)
+    gorynich (0.1.10)
       diplomat (~> 2)
       rails (~> 6.1)
 
@@ -95,7 +95,7 @@ GEM
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
-    globalid (1.0.0)
+    globalid (1.0.1)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
     i18n (1.12.0)

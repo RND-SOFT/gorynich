@@ -28,12 +28,6 @@ module Gorynich
       rescue Gorynich::TenantNotFound => e
         Rails.logger.error(e.inspect)
         [404, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [e.message]]
-      rescue StandardError => e
-        Rails.logger.error("Gorynich Error: #{e.inspect}")
-        Rails.logger.debug(e.backtrace)
-        [500, { 'Content-Type' => 'text/plain', 'charset' => 'UTF-8' }, [I18n.t(
-          'gorynich.internal_error', default: 'Gorynich internal error'
-        )]]
       end
     end
   end
