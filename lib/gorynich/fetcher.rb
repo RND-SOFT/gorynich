@@ -48,7 +48,7 @@ module Gorynich
 
       raise Error, 'Config is empty' if cfg.empty?
 
-      cfg
+      cfg.deep_transform_keys(&:downcase)
     end
   end
 end
