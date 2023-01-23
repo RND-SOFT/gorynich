@@ -132,7 +132,7 @@ module Gorynich
     #
     # @return [String] yaml result
     #
-    def database_config(env = nil, with_ignore = false)
+    def database_config(env = nil, fail_ignore: false)
       envs = Dir.glob(Rails.root.join('config/environments/*.rb').to_s).map { |f| File.basename(f, '.rb') }
       cfg = fetcher.fetch.extract!(*envs)
 
@@ -145,13 +145,16 @@ module Gorynich
             ]
           end
         else
-          env_params = with_ignore ? [env, {}] : [env]
-          {
-            env => cfg.fetch(*env_params).to_h { |t, c| [t, c.fetch('db_config')] }
-          }
+          if fail_ignore && cfg.fetch(env, nil).nil?
+            ''
+          else
+            {
+              env => cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
+            }
+          end
         end
 
-      result.to_yaml.gsub('---', '')
+      result.empty? ? result : result.to_yaml.gsub('---', '')
     end
 
     #
