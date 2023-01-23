@@ -146,7 +146,7 @@ module Gorynich
           end
         else
           if fail_ignore && cfg.fetch(env, nil).nil?
-            ''
+            { env => nil}
           else
             {
               env => cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
@@ -154,7 +154,7 @@ module Gorynich
           end
         end
 
-      result.empty? ? result : result.to_yaml.gsub('---', '')
+      result.to_yaml.gsub('---', '')
     end
 
     #
