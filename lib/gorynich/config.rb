@@ -128,10 +128,11 @@ module Gorynich
     # Database config for database.yml
     #
     # @param [String] env enviroment
+    # @param [Boolean] with_ignore ignore if there is no configuration for the environment
     #
     # @return [String] yaml result
     #
-    def database_config(env = nil)
+    def database_config(env = nil, with_ignore = false)
       envs = Dir.glob(Rails.root.join('config/environments/*.rb').to_s).map { |f| File.basename(f, '.rb') }
       cfg = fetcher.fetch.extract!(*envs)
 
@@ -144,8 +145,9 @@ module Gorynich
             ]
           end
         else
+          env_params = with_ignore ? [env, {}] : [env]
           {
-            env => cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
+            env => cfg.fetch(*env_params).to_h { |t, c| [t, c.fetch('db_config')] }
           }
         end
 
