@@ -8,10 +8,6 @@ db_config: &db_config
   password: xxx
 
 development:
-  default:
-    db_config:
-      <<: *db_config
-      database: gorynich_default
   local:
     db_config:
       <<: *db_config
@@ -19,6 +15,10 @@ development:
     secrets:
       uris:
         - http://localhost:3000
+  default:
+    db_config:
+      <<: *db_config
+      database: gorynich_default
   local1:
     db_config:
       <<: *db_config

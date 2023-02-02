@@ -11,14 +11,6 @@ module Gorynich
       def copy_initializer
         template 'gorynich.rb', Rails.root.join('config', 'initializers', 'gorynich.rb')
       end
-
-      def copy_config
-        template 'gorynich_config.yml', Rails.root.join('config', 'gorynich_config.yml.example')
-      end
-
-      def copy_database_config
-        copy_file 'database.yml', Rails.root.join('config', 'database.yml.example')
-      end
     end
   end
 end

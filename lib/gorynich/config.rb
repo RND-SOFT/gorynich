@@ -141,7 +141,7 @@ module Gorynich
           cfg.to_h do |cfg_env, tenant_cfg|
             [
               cfg_env,
-              tenant_cfg.to_h { |t, c| [t, c.fetch('db_config')] }
+              configs_sort(tenant_cfg).to_h { |t, c| [t, c.fetch('db_config')] }
             ]
           end
         else
@@ -149,7 +149,7 @@ module Gorynich
             { env => nil}
           else
             {
-              env => cfg.fetch(env).to_h { |t, c| [t, c.fetch('db_config')] }
+              env => configs_sort(cfg.fetch(env)).to_h { |t, c| [t, c.fetch('db_config')] }
             }
           end
         end
@@ -195,6 +195,18 @@ module Gorynich
         hosts = processed_uris(secrets).map { |uri| URI(uri).host }
         [tenant, hosts]
       end
+    end
+
+    #
+    # Make default database first in the list
+    #
+    # @param [Hash] cfg config of enviroment
+    #
+    # @return [Hash]
+    #
+    def configs_sort(cfg)
+      sorted_config = { 'default' => cfg['default'] }
+      sorted_config.merge!(cfg)
     end
 
     # consul KV can store only array into json string, so need to parse
