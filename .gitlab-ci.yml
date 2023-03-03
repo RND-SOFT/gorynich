@@ -31,11 +31,11 @@ variables:
       - .coverage
       - coverage
 
-ruby-2.6:
+ruby-2.7:
   extends: .test
-  image: rnds/ruby:2.6-test
+  image: rnds/ruby:2.7-test
   variables:
-    CASE: "2.6"
+    CASE: "2.7"
 
 ruby-3.0:
   extends: .test
@@ -44,7 +44,7 @@ ruby-3.0:
     CASE: "3.0"
 
 build:
-  image: rnds/ruby:2.6-test
+  image: rnds/ruby:2.7-test
   stage: build
   script:
     - bundle install --jobs=3 --path vendor/bundle && bundle package --all
@@ -61,7 +61,7 @@ build:
       - rubycritic/*
 
 publish:
-  image: rnds/ruby:2.6-test
+  image: rnds/ruby:2.7-test
   stage: deploy
   variables:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
@@ -73,7 +73,7 @@ publish:
     - /^v\d\.\d$/
 
 badges:
-  image: rnds/ruby:2.6-test
+  image: rnds/ruby:2.7-test
   stage: deploy
   allow_failure: true
   variables:
