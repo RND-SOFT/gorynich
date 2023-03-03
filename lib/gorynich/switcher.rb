@@ -21,7 +21,7 @@ module Gorynich
     end
 
     def with_database(tenant)
-      ::ActiveRecord::Base.connected_to role: tenant do
+      ::ActiveRecord::Base.connected_to role: tenant.to_sym do
         yield(tenant)
       end
     end
