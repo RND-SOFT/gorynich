@@ -12,8 +12,8 @@ Gem::Specification.new do |spec|
     else
       Gorynich::VERSION
     end
-  spec.authors     = ['Poliev Alexey']
-  spec.email       = ['apoliev@rnds.pro']
+  spec.authors     = ['Poliev Alexey', 'Samoilenko Yuri']
+  spec.email       = ['apoliev@rnds.pro', 'kinnalru@gmail.com']
   spec.summary     = 'Gem for switching databases'
   spec.description = 'Gem for switching databases for multitenancy apps'
   spec.homepage    = 'https://br.rnds.pro/ruby/gorynich'
