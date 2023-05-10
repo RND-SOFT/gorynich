@@ -1,0 +1,27 @@
+version: "2.3"
+
+services:
+  builder:
+    build:
+      context: .
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        BASE_IMG: ${BASE_IMG-library/ruby}
+        BASE_TAG: ${BASE_TAG-3-alpine}
+      cache_from:
+        - ${BASE_IMG-library/ruby}:latest
+        - ${BASE_IMG-library/ruby}:${COMMIT_SHA-latest}
+        - ${BASE_IMG-library/ruby}:${BRANCH_TAG-latest}
+        - ${BASE_IMG-library/ruby}:${TAG-builder}
+        - ${IMAGE-rnds/gorynich}:latest
+        - ${IMAGE-rnds/gorynich}:builder
+        - ${IMAGE-rnds/gorynich}:${COMMIT_SHA-latest}
+        - ${IMAGE-rnds/gorynich}:${BRANCH_TAG-latest}
+        - ${IMAGE-rnds/gorynich}:${TAG-builder}
+    image: ${IMAGE-rnds/gorynich}:${TAG-builder}
+    working_dir: /home/app
+    
+    
+    
+
+

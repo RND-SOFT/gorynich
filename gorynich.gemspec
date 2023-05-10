@@ -14,15 +14,16 @@ Gem::Specification.new do |spec|
     end
   spec.authors     = ['Poliev Alexey', 'Samoilenko Yuri']
   spec.email       = ['apoliev@rnds.pro', 'kinnalru@gmail.com']
-  spec.summary     = 'Gem for switching databases'
-  spec.description = 'Gem for switching databases for multitenancy apps'
+  spec.summary     = 'Multitenancy for Rails and subsystems'
+  spec.description = 'Multitenancy for Rails including ActiveRecord, ActionCable, ActiveJob and other subsystems'
   spec.homepage    = 'https://br.rnds.pro/ruby/gorynich'
+  spec.license     = 'MIT'
 
-  spec.files = Dir['{config}/**/*', '{lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
-
+  spec.files = Dir['{config}/**/*', '{lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
+  
   spec.add_dependency 'diplomat', '~> 2'
   spec.add_dependency 'rails', '>= 6.1'
-
+  
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'faker'
   spec.add_development_dependency 'pg'

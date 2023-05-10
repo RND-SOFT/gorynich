@@ -1,10 +1,91 @@
+variables:
+  IMAGE: harbor.rnds.pro/rnds/gorynich
+  BASE_IMG: harbor.rnds.pro/dockerhub/library/ruby
+  BASE_TAG: alpine
+  BUILD_TAG: builder
+  COMMIT_SHA: $CI_COMMIT_SHORT_SHA
+  BRANCH_TAG: $CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE: harbor.rnds.pro/dockerhub/library/docker:20.10.23-alpine3.17
+  BUILDVERSION: ${CI_PIPELINE_ID}
+
 stages:
   - tests
   - build
   - deploy
 
-variables:
-  BUILDVERSION: ${CI_PIPELINE_ID}
+before_script: 
+  - mkdir -p ~/.docker
+  - echo ${DOCKER_AUTH_CONFIG} > ~/.docker/config.json
+
+# PREPARE STAGE
+
+prepare:
+  stage: .pre
+  image: ${DOCKER_IMAGE}
+  interruptible: true
+  variables:
+    TAG: ${BUILD_TAG}
+  script:
+    - docker-compose build --force-rm --pull
+    - TAG=${COMMIT_SHA} docker-compose build --force-rm
+    - docker-compose push
+    - TAG=${COMMIT_SHA} docker-compose push
+
+# TEST STAGE
+
+.test:
+  image: ${IMAGE}:${BUILD_TAG}
+  stage: tests
+  variables:
+     COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
+  script:
+    - echo PREPARE
+    - export TAG=${RUBY_VER}-${BRANCH_TAG}-base
+    - docker-compose build --force-rm --pull
+    - export BASE_IMG=${IMAGE}
+    - export BASE_TAG=${TAG}
+    - export TAG=${RUBY_VER}-${BRANCH_TAG}
+    - docker-compose build --force-rm
+    - docker-compose up --force-recreate -t 1 --remove-orphans -d
+    - docker-compose exec -T builder bundle exec rails db:create db:migrate
+    - docker-compose exec -T builder rspec | tee .coverage
+    - docker-compose exec -T builder cat rspec.xml > rspec-${CASE}.xml
+  after_script:
+    - docker-compose down
+  coverage: '/\(\d+.\d+\%\) covered/'
+  artifacts:
+    reports:
+      junit: rspec*.xml
+    name: "coverage"
+    paths:
+      - .coverage
+
+
+units:
+  extends: .test
+  parallel:
+    matrix:
+      - RUBY_VER: [2.6-alpine, 3.0-alpine, alpine]
+
+build:
+  image: ${IMAGE}:${BUILD_TAG}
+  stage: build
+  variables:
+    BUILDVERSION: ${CI_PIPELINE_ID}
+  script:
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 && bundle package --all
+    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
+  cache:
+    paths:
+      - vendor/bundle
+      - vendor/cache
+  artifacts:
+    name: "gem"
+    paths:
+      - ./*.gem
+  only:
+    - master
 
 .test:
   stage: tests
@@ -54,12 +135,17 @@ build:
       - coverage/*
       - rubycritic/*
 
-publish:
-  image: rnds/ruby:3.0-test
+pushgem:
+  image: ${IMAGE}:${BUILD_TAG}
   stage: deploy
   variables:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
   script:
+    - mkdir -p ~/.gem
+    - 'echo ":rubygems_api_key: ${RUBYGEMS_KEY}" > ~/.gem/credentials'
+    - chmod 600 ~/.gem/credentials
+    - export GEMFILE=`ls *.gem | tail -n 1`
+    - echo gem push $GEMFILE
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
     - master

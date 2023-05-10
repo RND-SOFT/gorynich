@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Gorynich::Fetcher do
   let(:file_path) { "#{RSPEC_ROOT}/fixtures/fetchers/file_config.yml" }
   let(:consul_storage) { Faker::Lorem.word }

@@ -1,5 +1,3 @@
-require 'gorynich/engine'
-
 require_relative 'gorynich/version'
 require_relative 'gorynich/configuration'
 require_relative 'gorynich/fetcher'
