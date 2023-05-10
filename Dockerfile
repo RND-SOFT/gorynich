@@ -34,7 +34,6 @@ ONBUILD ADD . /home/app/
 
 ONBUILD RUN set -ex \
   && bundle install --jobs=3 \
-  && gem cleanup  \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 
 CMD ["tail", "-f", "/dev/null"]
