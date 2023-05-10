@@ -14,7 +14,7 @@ RUN mkdir -p /usr/local/etc \
   && echo 'gem: --no-document' > ~/.gemrc
 
 RUN set -ex \
-  && apk add --no-cache curl
+  && apk add --no-cache git curl tzdata build-base postgresql-dev postgresql-client libstdc++ libxml2
 
 ADD Gemfile Gemfile.lock *.gemspec /home/app/
 ADD lib/gorynich/version.rb /home/app/lib/gorynich/
@@ -24,8 +24,7 @@ ARG GEM_STORAGE_AUTH
 
 ENV BUNDLE_NEXUS__RNDS__LOCAL ${GEM_STORAGE_AUTH}
 
-RUN set -ex \
-  && apk add --no-cache git curl postgresql-client tzdata build-base
+
 
 RUN set -ex \
   && gem install bundler && gem update bundler \
