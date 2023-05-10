@@ -52,7 +52,7 @@ prepare:
     - docker-compose exec -T builder cat rspec.xml > rspec.xml
     - docker cp $(docker-compose ps -q builder):/home/app/coverage/ coverage/
   after_script:
-    - docker-compose down
+    - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
     reports:
