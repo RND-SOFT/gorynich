@@ -27,7 +27,6 @@ ENV BUNDLE_NEXUS__RNDS__LOCAL ${GEM_STORAGE_AUTH}
 RUN set -ex \
   && gem install bundler && gem update bundler \
   && bundle install --jobs=3 \
-  && gem cleanup  \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 
 ONBUILD ADD . /home/app/
