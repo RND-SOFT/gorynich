@@ -49,16 +49,16 @@ prepare:
     - docker-compose up --force-recreate -t 1 --remove-orphans -d
     - docker-compose exec -T builder bundle exec rails db:create db:migrate
     - docker-compose exec -T builder rspec | tee .coverage
-    - docker-compose exec -T builder cat rspec.xml > rspec-${CASE}.xml
+    - docker-compose exec -T builder cat rspec.xml > rspec.xml
+    - docker compose cp builder:/home/app/coverage/ coverage/
   after_script:
     - docker-compose down
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
     reports:
       junit: rspec*.xml
-    name: "gem"
+    name: "coverage"
     paths:
-      - ./*.gem
       - .coverage
       - coverage
       - coverage/*
