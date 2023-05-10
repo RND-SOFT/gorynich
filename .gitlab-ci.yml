@@ -60,7 +60,6 @@ prepare:
     paths:
       - .coverage
 
-
 units:
   extends: .test
   parallel:
@@ -107,31 +106,11 @@ build:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
-    name: "coverage"
-    paths:
-      - .coverage
-      - coverage
-
-ruby-3.0:
-  extends: .test
-  image: rnds/ruby:3.0-test
-  variables:
-    CASE: "3.0"
-
-build:
-  image: rnds/ruby:3.0-test
-  stage: build
-  script:
-    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
-    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'`
-  cache:
-    paths:
-      - vendor/bundle
-      - vendor/cache
-  artifacts:
     name: "gem"
     paths:
       - ./*.gem
+      - .coverage
+      - coverage
       - coverage/*
       - rubycritic/*
 

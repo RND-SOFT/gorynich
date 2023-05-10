@@ -25,6 +25,9 @@ ARG GEM_STORAGE_AUTH
 ENV BUNDLE_NEXUS__RNDS__LOCAL ${GEM_STORAGE_AUTH}
 
 RUN set -ex \
+  && apk add --no-cache git curl postgresql-client tzdata build-base
+
+RUN set -ex \
   && gem install bundler && gem update bundler \
   && bundle install --jobs=3 \
   && gem cleanup  \
