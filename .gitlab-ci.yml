@@ -87,8 +87,6 @@ build:
     name: "gem"
     paths:
       - ./*.gem
-  only:
-    - master
 
 pushgem:
   image: ${IMAGE}:${BUILD_TAG}
@@ -131,5 +129,5 @@ badges:
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
-  only:
-    - master
+  #only:
+  #  - master
