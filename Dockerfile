@@ -14,7 +14,7 @@ RUN mkdir -p /usr/local/etc \
   && echo 'gem: --no-document' > ~/.gemrc
 
 RUN set -ex \
-  && apk add --no-cache git curl tzdata build-base postgresql-dev postgresql-client libstdc++ libxml2
+  && apk add --no-cache git curl tzdata build-base postgresql-dev postgresql-client libstdc++ libxml2 docker docker-compose
 
 ADD Gemfile Gemfile.lock *.gemspec /home/app/
 ADD lib/gorynich/version.rb /home/app/lib/gorynich/
