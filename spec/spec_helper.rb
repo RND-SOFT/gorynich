@@ -2,6 +2,7 @@ require 'rspec/retry'
 require 'shoulda/matchers'
 require 'simplecov'
 require 'simplecov-console'
+require 'simplecov-cobertura'
 require 'faker'
 require 'webmock/rspec'
 
@@ -9,7 +10,8 @@ RSPEC_ROOT = File.dirname(__FILE__)
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
                                                                  SimpleCov::Formatter::HTMLFormatter,
-                                                                 SimpleCov::Formatter::Console # for developers
+                                                                 SimpleCov::Formatter::Console, # for developers
+                                                                 SimpleCov::Formatter::CoberturaFormatter
                                                                ])
 unless %w[F FALSE 0].include? ENV['COVERAGE'].to_s.upcase
 
