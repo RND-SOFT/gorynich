@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'faker'
   spec.add_development_dependency 'pg'
+  spec.add_development_dependency 'racc'
   spec.add_development_dependency 'rspec-collection_matchers'
   spec.add_development_dependency 'rspec_junit_formatter'
   spec.add_development_dependency 'rspec-rails'
