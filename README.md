@@ -13,7 +13,7 @@
 
 </div>
 
-Gorynich это гем для реализации [мультитенантности](https://ru.wikipedia.org/wiki/Мультиарендность) (мультиарендности) в Ruby on Rails приложении. Позволяет обеспечить строгую изоляцию данных в нескольких СУБД, поддерживаемых в ActiveRecord.
+`Gorynich` это гем для реализации [мультитенантности](https://ru.wikipedia.org/wiki/Мультиарендность) (мультиарендности) в Ruby on Rails приложении. Позволяет обеспечить строгую изоляцию данных в нескольких СУБД, поддерживаемых в ActiveRecord.
 
 ---
 
@@ -186,9 +186,9 @@ rails gc:db:prepare
 
 Second option is dynamic `database.yml` creation while starting Rails application. Configuration will be readed from selected source. In this case database configuration can change only when application restarts, bout other configuration such a domain to tenant binding and application secrets wil be updated "on the fly" while application running. Rake tasks `db:create` and `db:migrate` works as expected for all tenant in order.
 
->> ВНИМАНИЕ! `db:rollback` не работает в мультитенантном режиме.
+> ВНИМАНИЕ! `db:rollback` не работает в мультитенантном режиме.
 
->> WARNING!  `db:rollback` is not working in multitenancy mode.
+> WARNING!  `db:rollback` is not working in multitenancy mode.
 
 2. В `database.yml` прописать следующее / In `database.yml` set:
 
@@ -343,7 +343,7 @@ require 'gorynich/head/telegram'
 Telegram::Bot::UpdatesPoller.include(Gorynich::Head::Telegram)
 ```
 
-### Shirine 
+### Shrine 
 
 ```ruby
 #lib/shrine/plugins/tenant_location.rb
