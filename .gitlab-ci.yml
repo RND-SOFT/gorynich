@@ -56,9 +56,13 @@ prepare:
   artifacts:
     reports:
       junit: rspec*.xml
-    name: "coverage"
+    name: "gem"
     paths:
+      - ./*.gem
       - .coverage
+      - coverage
+      - coverage/*
+      - rubycritic/*
 
 units:
   extends: .test
@@ -85,34 +89,6 @@ build:
       - ./*.gem
   only:
     - master
-
-.test:
-  stage: tests
-  variables:
-    COMPOSE_FILE: envs/tests/units/docker-compose.yml
-    COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
-    GIT_BRANCH: ${CI_COMMIT_REF_NAME}
-    GIT_COMMIT: ${CI_COMMIT_SHA}
-  script:
-    - docker-compose build --force-rm --pull gemtestbase-${CASE}
-    - docker-compose build --force-rm test-${CASE}
-    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
-
-    - DOCKER_CONTAINER_ID=`docker-compose ps -q test-${CASE} | head -n 1`
-    - docker exec $DOCKER_CONTAINER_ID bundle exec rails db:create db:migrate
-    - docker exec $DOCKER_CONTAINER_ID bundle exec rspec | tee .coverage
-    - docker cp $DOCKER_CONTAINER_ID:/home/app/coverage ./coverage
-  after_script:
-    - docker-compose down -v --remove-orphans
-  coverage: '/\(\d+.\d+\%\) covered/'
-  artifacts:
-    name: "gem"
-    paths:
-      - ./*.gem
-      - .coverage
-      - coverage
-      - coverage/*
-      - rubycritic/*
 
 pushgem:
   image: ${IMAGE}:${BUILD_TAG}
