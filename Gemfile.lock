@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gorynich (1.0.1)
+    gorynich (1.1.0)
       diplomat (~> 2)
       rails (~> 6.1)
 

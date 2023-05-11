@@ -15,13 +15,23 @@
 
 `Gorynich` это гем для реализации [мультитенантности](https://ru.wikipedia.org/wiki/Мультиарендность) (мультиарендности) в Ruby on Rails приложении. Позволяет обеспечить строгую изоляцию данных в нескольких СУБД, поддерживаемых в ActiveRecord.
 
+Поскольку мультитенантное приложение тесно связано с разделение данных, которые в совю очередь могут находиться в разных источниках (СУБД, S3, Redis и пр), а также с их обработкой в разных подсистемах (ActiveJob, ActionCable), мы выбрали название ["Горыныч"](https://ru.wikipedia.org/wiki/Змей_Горыныч), что бы подчеркнуть ~многоголовость~ многогранность интеграций. 
+
 ---
 
 `Gorynich` provides tools for creating [Multitenancy](https://en.wikipedia.org/wiki/Multitenancy) Ruby on Rails application. If you need to have strong data segregation and isolated DBMS's with diffrent providers (supported by ActiveRecord) and credentials, `Gorynich` can help.
 
-Возможности / Features
+Since a multi-tenant application is closely related to the separation of data, which in turn can be located in different sources (DBMS, S3, Redis, etc.), as well as their processing in different subsystems (ActiveJob, ActionCable), we chose the name ["Gorynych"](https://en.wikipedia.org/wiki/Zmei_(Russian)#Multiheadedness), which to emphasize the ~multiheadedness~ versatility of integrations.
 
-- Прозрачное переключение БД на основании доменов / Transparent domain based DBMS switching
+<div align="left">
+  <a href="https://rnds.pro/" >
+    <img src="https://library.rnds.pro/repository/public-blob/logo/RNDS.svg" alt="Supported by RNDSOFT"  height="35">
+  </a>
+</div>
+
+## Возможности / Features
+
+- Прозрачное переключение БД/СУБД на основании данных запросы / Transparent request based DB/DBMS switching
 - Интеграция с / Integrations:
   - ActiveRecord
   - ActionCable
@@ -29,7 +39,7 @@
   - DelayedJob
 - Получение параметров из [Consul KV](https://developer.hashicorp.com/consul/docs/dynamic-app-config/kv) / Stoting configuration in [Consul KV](https://developer.hashicorp.com/consul/docs/dynamic-app-config/kv)
 - Получение параметров из файла / Storing configuration in file
-- Разеделение секретов / Secret storing and isolation
+- Разделение секретов / Secret storing and isolation
 - Обновление конфигурации "на лету" / update configuration "on the fly"
 - Статическая генерация `database.yml` / Static `database.yml` generation
 
@@ -40,7 +50,7 @@
 gem install gorynich
 ```
 
-При установке `Gorynich` через bundler добавте следующую строку в `Gemfile`:
+При установке `Gorynich` через bundler добавьте следующую строку в `Gemfile`:
 
 ---
 
@@ -55,20 +65,65 @@ gem 'gorynich'
 ```sh
 bundle install # для установки гема / gem installation
 
-rails generate gorynich:install # для добавления шаблонов конфигурации / install configutation templates 
+rails generate gorynich:install # для добавления шаблонов конфигурации / install configuration templates 
 ```
 
 ## Что такое тенант? / What tenant is?
 
-Тенант в данном случае это активное подключение к СУБД, а также доступный в любом месте объект `Gorynich::Current`, в котором находятся параметры текущенго тенанта:
+Тенант в данном случае это активное подключение к СУБД, а также доступный в любом месте объект `Gorynich::Current`, в котором находятся параметры текущего тенанта. К нему можно обратиться в любом месте.
+
+--- 
+
+In this case tenant is an active connection to the DBMS, as well as a `Gorynich::Current` object available anywhere, which contains the parameters of the current tenant. You can refer to it anywhere, for example when sending emails:
+
 
 ```ruby
 Gorynich::Current.tap do |t|
   t.tenant   # tenant_name
-  t.uri      # https://app.domain.org/posts/5
+  t.uri      # https://app.domain.org
   t.host     # app.domain.org
   t.secrets  # { key1 => value1, key2 => value2}
   t.database # { adapter => postgresql, host => localhost, port => 5432, username => xxx, password => xxx }
+end
+```
+
+## Как это работает / How it works
+
+Перед обработкой запроса с помощью [Gorynich::Rack::RackMiddleware](./lib/gorynich/head/rack_middleware.rb) соединение Active Record переключается на указанную БД, а с помощью [ActiveSupport::CurrentAttributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html) в любом месте приложения становятся доступны дополнительные параметры через обращение к `Gorynich::Current`. ActionCable, ActiveJob и другие "головы" используют настройки из `Gorynich::Current` для сохранения контекста и дальнейшего исполнения.
+
+Например при отправке писем изнутри ActiveJob, использование выглядит так:
+
+--- 
+
+Before request processing [Gorynich::Rack::RackMiddleware](./lib/gorynich/head/rack_middleware.rb) ActiveRecord connection switching to apropriate database. Additional tenant properties available in any part of application through [ActiveSupport::CurrentAttributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html) as  `Gorynich::Current` instance. ActionCable, ActiveJob and other "heads" also uses `Gorynich::Current` to store context and evaluate it later.
+
+For example, when sending emails from within ActiveJob, the usage looks like this:
+
+```ruby
+#app/mailers/application_mailer.rb
+
+class ApplicationMailer < ActionMailer::Base
+  helper :application
+
+  def self.email_settings
+    (
+      Gorynich::Current.secrets[:email_settings] || Rails.application.secrets.email_settings || {}
+    ).with_indifferent_access
+  end
+
+  default from: email_settings[:from], content_type: 'text/plain'
+
+  def mail(args)
+    @host = Gorynich.instance.hosts(Gorynich::Current.tenant).first || Rails.application.secrets.domain
+
+    @settings ||= smtp_settings.merge(application_host: @host)
+
+    super(args).tap |m|
+      m.from = @settings[:from]
+      m.delivery_method.settings = @settings unless Rails.env.development?
+    end
+  end
+
 end
 ```
 
@@ -92,7 +147,7 @@ Gorynich::Fetchers::Consul.new(storage: [CONSUL_KEY], **options) # из конс
 Пример / Example:
 
 ```ruby
-# из одного / from single sourc
+# из одного / from single source
 Gorynich.configuration.fetcher = Gorynich::Fetchers::File.new(file_path: Rails.root.join('config', 'gorynich_config.yml'))
 
 # из нескольких (данные берутся от первого успешного fetcher)
@@ -168,42 +223,46 @@ rails gc:db:prepare
 
 ### Настройка конфигурации БД / Database configuration
 
-Первый, самый простой способ работы, подходящий для локальной разработки это статическая генерация `database.yml`.
+1. Статическая генерация / static generation
+
+Первый, самый простой способ работы, подходящий для локальной разработки, это статическая генерация `database.yml`.
 
 --- 
 
 First and most simple using of Gorynich handy for local development is static `database.yml` generation.
 
-1. запуск rake-задачи / runing rake task:
+запуск rake-задачи / runing rake task:
 
 ```bash
 rails gc:db:prepare
 ```
 
+2. Полуавтоматический режим / Semi-automated mode
+
 Второй вариант это создание конфигурации `database.yml` при старте Rails приложения - данные буду прочитаны из настроенного источника. В этом случае конфигурация СУБД может изменяться только при перезапуске приложения, но остальные настройки, такие как привязка тенантов к доменам и secrets будут подхватываться "на лету" непосредственно во время работы приложения. Rake-задачи `db:create`, `db:migrate` работают для всех тенантов на момент запуска. 
 
 ---
 
-Second option is dynamic `database.yml` creation while starting Rails application. Configuration will be readed from selected source. In this case database configuration can change only when application restarts, bout other configuration such a domain to tenant binding and application secrets wil be updated "on the fly" while application running. Rake tasks `db:create` and `db:migrate` works as expected for all tenant in order.
+Second option is dynamic `database.yml` creation while starting Rails application. Configuration will be readed from selected source. In this case database configuration can change only when application restarts, but other configuration such a domain to tenant binding and application secrets wil be updated "on the fly" while application running. Rake tasks `db:create` and `db:migrate` works as expected for all tenant in order.
 
 > ВНИМАНИЕ! `db:rollback` не работает в мультитенантном режиме.
 
 > WARNING!  `db:rollback` is not working in multitenancy mode.
 
-2. В `database.yml` прописать следующее / In `database.yml` set:
+В `database.yml` прописать следующее / In `database.yml` set:
 
 ```yaml
 # config/database.yml
 <%= Gorynich.instance.database_config %>
 ```
 
-Если вам нужны дополнительные БД, не являющимися тенантами, например, общая БД, то в `database.yml` можно дописать всё необходимое как о обычном Rails приложении:
+3. Дополнительные БД / Additional datbases
+
+Если вам нужны дополнительные БД, не являющиеся тенантами, например, общая БД, то в `database.yml` можно дописать всё необходимое как в обычном Rails приложении:
 
 ---
 
 If you need additional DB, not for tenants Ex. generic database you can configure it in `database.yml` like in regular Rails application:
-
-3. Если вам нужны дополнительные БД, не являющимися тенантами, например, общая БД, то в `database.yml` нужно прописать следующее:
 
 ```yaml
 # config/database.yml
@@ -228,11 +287,11 @@ your_database:
 Gorynich::Current.tenant
 ```
 
-Переключение тенантов работает автоматичеки и внутри Rails приложения не нужни предпринимать никаких дополнительных действий - вы всегда подключены к той базе даанных к которой приязан домен текущего запроса. Но если необходимо явно выполнить действия в контексте конкретного тената это можно сделать:
+Переключение тенантов работает автоматичеки и внутри Rails приложения не нужно предпринимать никаких дополнительных действий - вы всегда подключены к той базе данных к которой привязан домен текущего запроса (или иной параметр). Но если необходимо явно выполнить действия в контексте конкретного тената это можно сделать:
 
 ---
 
-Switching tenants is automatic and no additional steps need to be taken inside a Rails applicationSwitching tenants is automatic and no additional steps need to be taken inside a Rails application - you always connected to database associated with currently procesed request. But if you want take action inside specific tenant context you can use:
+Switching tenants is automatic and no additional steps need to be taken inside a Rails application - you always connected to database associated with currently procesed request. But if you want take action inside specific tenant context you can use:
 
 ```ruby
   # для выполнения в конкретном тенанте / run block inside specific tenant
@@ -246,16 +305,7 @@ Switching tenants is automatic and no additional steps need to be taken inside a
   end
 ```
 
-## Как это работает / How it works
-
-Перед обработкой запроса с помощью [Gorynich::Rack::RackMiddleware](./lib/gorynich/head/rack_middleware.rb) соединение Active Record переключается на указанную БД, а с помощью [ActiveSupport::CurrentAttributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html) в любом месте приложения становятся доступны дополнительные параметры через обращение к `Gorynich::Current`. ActionCable, ActiveJob и другие "головы" используют настройки из `Gorynich::Current` для сохранения контекста и дальнейшего исполнения.
-
---- 
-
-Before request processing [Gorynich::Rack::RackMiddleware](./lib/gorynich/head/rack_middleware.rb) ActiveRecord connection switching to apropriate database. Additional tenant properties available in any part of application through [ActiveSupport::CurrentAttributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html) as  `Gorynich::Current` instance. ActionCable, ActiveJob and other "heads" also uses `Gorynich::Current` to store context and evaluate it later.
-
-
-## Примеры дополнительных интеграций / Additional integration examples
+## Примеры дополнительных интеграций и использвоаний / Additional integration examples
 
 ### Redis / Rails.cache
 
@@ -302,47 +352,6 @@ config.telegram_updates_controller.session_store = :redis_cache_store, {
 }
 ```
 
-### Telegram Bot
-
-```ruby
-#lib/gorynich/head/telegram.rb
-
-module Gorynich
-  module Head
-    module Telegram
-      class Middleware
-        attr_reader :controller
-
-        def initialize(controller)
-          @controller = controller
-        end
-
-        def call(env)
-          request = ActionDispatch::Request.new(env)
-          token = request.params['token']
-          if token.present?
-            update = request.request_parameters
-            controller.dispatch(nil, update)
-            [200, {}, ['']]
-          else
-            [404, {}, ['']]
-          end
-        end
-
-        def inspect
-          "#<#{self.class.name}(#{controller.try!(:name)})>"
-        end
-      end
-    end
-  end
-end
-
-#config/initializers/telegram.rb
-require 'gorynich/head/telegram'
-
-Telegram::Bot::UpdatesPoller.include(Gorynich::Head::Telegram)
-```
-
 ### Shrine 
 
 ```ruby
@@ -367,6 +376,38 @@ end
 Shrine.plugin :tenant_location
 ```
 
+### ApplicationController
+
+```ruby
+class ApplicationController < ActionController::Base
+  around_action :around_action_notification
+
+  def around_action_notification(&block)
+    ActiveSupport::Notifications.instrument(
+      'around_action.action_controller',
+      current_user: original_user,
+      request:      request,
+      tenant:       Gorynich::Current.tenant, &block
+    )
+  end
+end
+```
+
+### DelayedJob
+
+```ruby
+#config/initializers/delayed_job.rb
+
+require 'gorynich/head/delayed_job'
+
+Delayed::Worker.plugins << Gorynich::Head::DelayedJob
+```
+
 ## Лицензия / License
 
-[MIT](./LICENSE)
+Библиотека доступна с открытым исходным кодом в соответствии с условиями [лицензии MIT](./LICENSE).
+
+---
+
+The gem is available as open source under the terms of the [MIT License](./LICENSE).
+
