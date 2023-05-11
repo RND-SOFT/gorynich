@@ -26,7 +26,7 @@ Since a multi-tenant application is closely related to the separation of data, w
 
 <div align="left">
   <a href="https://rnds.pro/" >
-    <img src="https://library.rnds.pro/repository/public-blob/logo/RNDS.svg" alt="Supported by RNDSOFT"  height="35">
+    <img src="https://library.rnds.pro/repository/public-blob/logo/RNDS.svg" alt="Supported by RNDSOFT"  height="60">
   </a>
 </div>
 
