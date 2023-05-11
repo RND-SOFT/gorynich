@@ -96,7 +96,7 @@ build:
 # DEPLOY STAGE
 
 pushgem:internal:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: rnds/ruby:3.0-test
   stage: deploy
   variables:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
@@ -110,7 +110,7 @@ pushgem:internal:
     - /^v\d\.\d$/
 
 pushgem:rubygems:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: rnds/ruby:3.0-test
   stage: deploy
   script:
     - mkdir -p ~/.gem
