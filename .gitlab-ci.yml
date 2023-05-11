@@ -138,9 +138,6 @@ badges:
       - vendor/cache
     policy: pull
   script:
-    - bundle config set --local path 'vendor/bundle'
-    - bundle install --jobs=3
-
     - bundle audit update
     - bundle audit || true
     - bundle outdated --only-explicit --no-pre --group default || true
