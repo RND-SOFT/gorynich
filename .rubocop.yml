@@ -1,0 +1,130 @@
+AllCops:
+  TargetRubyVersion: 2.5
+  Exclude:
+    - "storage/**/*"
+
+Layout/TrailingEmptyLines:
+  Enabled: true
+  AutoCorrect: true
+  EnforcedStyle: final_blank_line
+
+#Layout/IndentationWidth:
+#  Enabled: true
+
+#Layout/IndentAssignment:
+#  Enabled: false
+#  IndentationWidth: false
+
+#Layout/ElseAlignment:
+#  Enabled: false
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Layout/MultilineAssignmentLayout:
+  EnforcedStyle: new_line
+
+Layout/RescueEnsureAlignment:
+  Enabled: true
+
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: variable
+  AutoCorrect: true
+
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+  EnforcedHashRocketStyle: table
+
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods
+
+Layout/EmptyLines:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines_except_namespace
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines_except_namespace
+
+Layout/SpaceInsideBlockBraces:
+  EnforcedStyle: space
+  SpaceBeforeBlockParameters: false
+
+Layout/SpaceAroundBlockParameters:
+  EnforcedStyleInsidePipes: no_space
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: false
+
+#Lint/AssignmentInCondition:
+#  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Metrics/LineLength:
+  Max: 100
+  IgnoredPatterns: ['(\A|\s)#']
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/MethodLength:
+  Max: 20
+
+Security/YAMLLoad:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/RedundantBegin:
+  Enabled: false
+
+Style/GlobalVars:
+  AllowedVariables: ["$logger", "$root"]
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/Lambda:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/RaiseArgs:
+  EnforcedStyle: compact
+
+Style/SpecialGlobalVars:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/RescueModifier:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  AutoCorrect: true
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+  AutoCorrect: true
