@@ -105,7 +105,7 @@ pushgem:
     - 'echo ":rubygems_api_key: ${RUBYGEMS_KEY}" > ~/.gem/credentials'
     - chmod 600 ~/.gem/credentials
     - export GEMFILE=`ls *.gem | tail -n 1`
-    - echo gem push $GEMFILE
+    - gem push $GEMFILE
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
     - master
