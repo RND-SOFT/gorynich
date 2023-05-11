@@ -107,10 +107,10 @@ pushgem:
     - export GEMFILE=`ls *.gem | tail -n 1`
     - gem push $GEMFILE
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
-  only:
-    - master
-    - /^v\d$/
-    - /^v\d\.\d$/
+  # only:
+  #   - master
+  #   - /^v\d$/
+  #   - /^v\d\.\d$/
 
 badges:
   image: rnds/ruby:3.0-test
