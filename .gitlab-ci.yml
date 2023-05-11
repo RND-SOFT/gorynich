@@ -95,22 +95,34 @@ build:
 
 # DEPLOY STAGE
 
-pushgem:
+pushgem:internal:
   image: ${IMAGE}:${BUILD_TAG}
   stage: deploy
   variables:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
   script:
     - mkdir -p ~/.gem
+    - chmod 600 ~/.gem/credentials
+    - export GEMFILE=`ls *.gem | tail -n 1`
+    - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
+  only:
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
+
+pushgem:rubygems:
+  image: ${IMAGE}:${BUILD_TAG}
+  stage: deploy
+  script:
+    - mkdir -p ~/.gem
     - 'echo ":rubygems_api_key: ${RUBYGEMS_KEY}" > ~/.gem/credentials'
     - chmod 600 ~/.gem/credentials
     - export GEMFILE=`ls *.gem | tail -n 1`
     - gem push $GEMFILE
-    - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
-  # only:
-  #   - master
-  #   - /^v\d$/
-  #   - /^v\d\.\d$/
+  only:
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
 
 badges:
   image: rnds/ruby:3.0-test
@@ -136,5 +148,5 @@ badges:
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
-  # only:
-  #  - master
+  only:
+   - master
