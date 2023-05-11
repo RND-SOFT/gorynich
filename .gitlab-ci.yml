@@ -102,7 +102,6 @@ pushgem:internal:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
   script:
     - mkdir -p ~/.gem
-    - chmod 600 ~/.gem/credentials
     - export GEMFILE=`ls *.gem | tail -n 1`
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
