@@ -1,48 +1,89 @@
+variables:
+  IMAGE: harbor.rnds.pro/rnds/gorynich
+  BASE_IMG: harbor.rnds.pro/dockerhub/library/ruby
+  BASE_TAG: alpine
+  BUILD_TAG: builder
+  COMMIT_SHA: $CI_COMMIT_SHORT_SHA
+  BRANCH_TAG: $CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE: harbor.rnds.pro/dockerhub/library/docker:20.10.23-alpine3.17
+  BUILDVERSION: ${CI_PIPELINE_ID}
+
 stages:
   - tests
   - build
   - deploy
 
-variables:
-  BUILDVERSION: ${CI_PIPELINE_ID}
+before_script: 
+  - mkdir -p ~/.docker
+  - echo ${DOCKER_AUTH_CONFIG} > ~/.docker/config.json
+
+# PREPARE STAGE
+
+prepare:
+  stage: .pre
+  image: ${DOCKER_IMAGE}
+  interruptible: true
+  variables:
+    TAG: ${BUILD_TAG}
+  script:
+    - docker-compose build --force-rm --pull
+    - TAG=${COMMIT_SHA} docker-compose build --force-rm
+    - docker-compose push
+    - TAG=${COMMIT_SHA} docker-compose push
+
+# TEST STAGE
 
 .test:
+  image: ${IMAGE}:${BUILD_TAG}
   stage: tests
   variables:
-    COMPOSE_FILE: envs/tests/units/docker-compose.yml
-    COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
-    GIT_BRANCH: ${CI_COMMIT_REF_NAME}
-    GIT_COMMIT: ${CI_COMMIT_SHA}
+     COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
   script:
-    - docker-compose build --force-rm --pull gemtestbase-${CASE}
-    - docker-compose build --force-rm test-${CASE}
-    - docker-compose up --force-recreate -t 1 --remove-orphans -d test-${CASE}
-
-    - DOCKER_CONTAINER_ID=`docker-compose ps -q test-${CASE} | head -n 1`
-    - docker exec $DOCKER_CONTAINER_ID bundle exec rails db:create db:migrate
-    - docker exec $DOCKER_CONTAINER_ID bundle exec rspec | tee .coverage
-    - docker cp $DOCKER_CONTAINER_ID:/home/app/coverage ./coverage
+    - echo PREPARE
+    - export TAG=${RUBY_VER}-${BRANCH_TAG}-base
+    - docker-compose build --force-rm --pull
+    - export BASE_IMG=${IMAGE}
+    - export BASE_TAG=${TAG}
+    - export TAG=${RUBY_VER}-${BRANCH_TAG}
+    - docker-compose build --force-rm
+    - docker-compose up --force-recreate -t 1 --remove-orphans -d
+    - docker-compose exec -T builder bundle exec rails db:create db:migrate
+    - docker-compose exec -T builder rspec | tee .coverage
+    - docker-compose exec -T builder cat rspec.xml > rspec.xml
+    - docker cp $(docker-compose ps -q builder):/home/app/coverage/ coverage/
   after_script:
     - docker-compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/coverage.xml
+      junit: rspec*.xml
     name: "coverage"
     paths:
       - .coverage
       - coverage
+      - coverage/*
+      - rubycritic/*
 
-ruby-3.0:
+units:
   extends: .test
-  image: rnds/ruby:3.0-test
-  variables:
-    CASE: "3.0"
+  parallel:
+    matrix:
+      - RUBY_VER: [2.6-alpine, 3.0-alpine, alpine]
+
+# BUILD STAGE
 
 build:
-  image: rnds/ruby:3.0-test
+  image: ${IMAGE}:${BUILD_TAG}
   stage: build
+  variables:
+    BUILDVERSION: ${CI_PIPELINE_ID}
   script:
-    - bundle install --jobs=3 --path vendor/bundle && bundle package --all
-    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'`
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3 && bundle package --all
+    - gem build `ls | grep gemspec`
   cache:
     paths:
       - vendor/bundle
@@ -51,16 +92,33 @@ build:
     name: "gem"
     paths:
       - ./*.gem
-      - coverage/*
-      - rubycritic/*
 
-publish:
-  image: rnds/ruby:3.0-test
+# DEPLOY STAGE
+
+pushgem:internal:
+  image: ${IMAGE}:${BUILD_TAG}
   stage: deploy
   variables:
     GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
   script:
+    - mkdir -p ~/.gem
+    - chmod 600 ~/.gem/credentials
+    - export GEMFILE=`ls *.gem | tail -n 1`
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
+  only:
+    - master
+    - /^v\d$/
+    - /^v\d\.\d$/
+
+pushgem:rubygems:
+  image: ${IMAGE}:${BUILD_TAG}
+  stage: deploy
+  script:
+    - mkdir -p ~/.gem
+    - 'echo ":rubygems_api_key: ${RUBYGEMS_KEY}" > ~/.gem/credentials'
+    - chmod 600 ~/.gem/credentials
+    - export GEMFILE=`ls *.gem | tail -n 1`
+    - gem push $GEMFILE
   only:
     - master
     - /^v\d$/
@@ -91,4 +149,4 @@ badges:
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
   only:
-    - master
+   - master

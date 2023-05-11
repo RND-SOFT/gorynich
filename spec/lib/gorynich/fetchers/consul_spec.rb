@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Gorynich::Fetchers::Consul do
   let(:storage) { Faker::Lorem.word }
 

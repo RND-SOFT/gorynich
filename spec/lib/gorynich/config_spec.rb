@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Gorynich::Config do
   before(:all) do
     file_path = "#{RSPEC_ROOT}/fixtures/fetchers/file_config.yml"
