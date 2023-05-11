@@ -124,14 +124,23 @@ pushgem:rubygems:
     - /^v\d\.\d$/
 
 badges:
-  image: rnds/ruby:3.0-test
+  image: harbor.rnds.pro/dockerhub/rnds/gitlab-runner:latest
   stage: deploy
   allow_failure: true
   variables:
     BRANCH_LOCK: ci/${CI_PROJECT_NAME}/${CI_COMMIT_REF_SLUG}
     ENV_LOCK: ci/${CI_PROJECT_NAME}/${CI_ENVIRONMENT_SLUG}
     BADGES_URL: https://lysander.rnds.pro/api/v1/badges/gorynich
+    URL: https://github.com/RND-SOFT/gorynich
+  cache:
+    paths:
+      - vendor/bundle
+      - vendor/cache
+    policy: pull
   script:
+    - bundle config set --local path 'vendor/bundle'
+    - bundle install --jobs=3
+
     - bundle audit update
     - bundle audit || true
     - bundle outdated --only-explicit --no-pre --group default || true
@@ -142,10 +151,10 @@ badges:
     - quality=$(rubycritic -f lint lib | tail -n 1 | cut -d ' ' -f2) || true
     - coverage=$(cat .coverage | ruby -e 'puts /\((\d+.\d+)\%\) covered/.match(STDIN.read)[1]') || true
 
-    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"version\", \"color\":\"blue\", \"icon\":\"ruby&logoColor\", \"message\":\"${version}\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_version.json" || true
-    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"vulnerable\", \"color\":\"red\", \"message\":\"${vulnerable} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_vulnerable.json" || true
-    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
-    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
-    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"version\", \"color\":\"blue\", \"icon\":\"ruby&logoColor\", \"message\":\"${version}\", \"redirect_url\":\"${URL}\"}}" "${BADGES_URL}_version.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"vulnerable\", \"color\":\"red\", \"message\":\"${vulnerable} gems\", \"redirect_url\":\"${URL}\"}}" "${BADGES_URL}_vulnerable.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${URL}\"}}" "${BADGES_URL}_outdated.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${URL}\"}}" "${BADGES_URL}_quality.json" || true
+    - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${URL}\"}}" "${BADGES_URL}_coverage.json" || true
   only:
    - master
