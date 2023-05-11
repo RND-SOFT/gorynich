@@ -386,7 +386,7 @@ class ApplicationController < ActionController::Base
   def around_action_notification(&block)
     ActiveSupport::Notifications.instrument(
       'around_action.action_controller',
-      current_user: original_user,
+      current_user: current_user,
       request:      request,
       tenant:       Gorynich::Current.tenant, &block
     )
