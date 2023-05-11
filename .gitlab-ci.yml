@@ -83,7 +83,7 @@ build:
   script:
     - bundle config set --local path 'vendor/bundle'
     - bundle install --jobs=3 && bundle package --all
-    - gem build `ls | grep gemspec` && gem install `ls | grep -e '.gem$'` 
+    - gem build `ls | grep gemspec`
   cache:
     paths:
       - vendor/bundle
@@ -136,5 +136,5 @@ badges:
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"outdated\", \"color\":\"orange\", \"message\":\"${outdated} gems\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_outdated.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"quality\", \"color\":\"lightgray\", \"message\":\"${quality}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_quality.json" || true
     - curl -X PUT -m 3.0 --oauth2-bearer ${BADGE_TOKEN} -H "Content-Type:application/json" -d "{\"badge\":{\"label\":\"coverage\", \"color\":\"brightgreen\", \"message\":\"${coverage}%\", \"redirect_url\":\"${CI_PROJECT_URL}\"}}" "${BADGES_URL}_coverage.json" || true
-  only:
-   - master
+  # only:
+  #  - master

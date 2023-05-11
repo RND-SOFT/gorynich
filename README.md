@@ -7,6 +7,7 @@
 [![YARD](https://badgen.net/badge/YARD/doc/blue)](http://www.rubydoc.info/gems/gorynich)
 
 
+[![coverage](https://lysander.rnds.pro/api/v1/badges/gorynich_coverage.svg)](https://lysander.rnds.pro/api/v1/badges/gorynich_coverage.html)
 [![quality](https://lysander.rnds.pro/api/v1/badges/gorynich_quality.svg)](https://lysander.rnds.pro/api/v1/badges/gorynich_quality.html)
 [![outdated](https://lysander.rnds.pro/api/v1/badges/gorynich_outdated.svg)](https://lysander.rnds.pro/api/v1/badges/gorynich_outdated.html)
 [![vulnerable](https://lysander.rnds.pro/api/v1/badges/gorynich_vulnerable.svg)](https://lysander.rnds.pro/api/v1/badges/gorynich_vulnerable.html)
