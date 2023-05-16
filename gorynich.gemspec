@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir['{config}/**/*', '{lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
 
   spec.add_dependency 'diplomat', '~> 2'
-  spec.add_dependency 'rails', '~> 6.1'
+  spec.add_dependency 'rails', '>= 6.1'
 
   spec.add_development_dependency 'factory_bot_rails'
   spec.add_development_dependency 'faker'
