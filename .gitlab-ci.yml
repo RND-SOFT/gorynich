@@ -26,10 +26,10 @@ prepare:
   variables:
     TAG: ${BUILD_TAG}
   script:
-    - docker-compose build --force-rm --pull
-    - TAG=${COMMIT_SHA} docker-compose build --force-rm
-    - docker-compose push
-    - TAG=${COMMIT_SHA} docker-compose push
+    - docker compose build --force-rm --pull
+    - TAG=${COMMIT_SHA} docker compose build --force-rm
+    - docker compose push
+    - TAG=${COMMIT_SHA} docker compose push
 
 # TEST STAGE
 
@@ -41,18 +41,18 @@ prepare:
   script:
     - echo PREPARE
     - export TAG=${RUBY_VER}-${BRANCH_TAG}-base
-    - docker-compose build --force-rm --pull
+    - docker compose build --force-rm --pull
     - export BASE_IMG=${IMAGE}
     - export BASE_TAG=${TAG}
     - export TAG=${RUBY_VER}-${BRANCH_TAG}
-    - docker-compose build --force-rm
-    - docker-compose up --force-recreate -t 1 --remove-orphans -d
-    - docker-compose exec -T builder bundle exec rails db:create db:migrate
-    - docker-compose exec -T builder rspec | tee .coverage
-    - docker-compose exec -T builder cat rspec.xml > rspec.xml
-    - docker cp $(docker-compose ps -q builder):/home/app/coverage/ coverage/
+    - docker compose build --force-rm
+    - docker compose up --force-recreate -t 1 --remove-orphans -d
+    - docker compose exec -T builder bundle exec rails db:create db:migrate
+    - docker compose exec -T builder rspec | tee .coverage
+    - docker compose exec -T builder cat rspec.xml > rspec.xml
+    - docker cp $(docker compose ps -q builder):/home/app/coverage/ coverage/
   after_script:
-    - docker-compose down -v --remove-orphans
+    - docker compose down -v --remove-orphans
   coverage: '/\(\d+.\d+\%\) covered/'
   artifacts:
     reports:
