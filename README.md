@@ -144,7 +144,7 @@ Gorynich::Fetchers::File.new(file_path: [FILE_PATH]) # из файла / from fi
 
 Gorynich::Fetchers::Consul.new(storage: [CONSUL_KEY], **options) # из консула / from consul (options - from Dimplomat gem https://github.com/WeAreFarmGeek/diplomat)
 
-Gorynich::Fetchers::ConsulSec.new(storage: [CONSUL_KEY], file_path: [FILE_PATH], **options) # из консула с сохранением в файл (при недоступности консула будет читать из файла) / from consul with saving to a file (if unavailable, consul will read from the file) (options - from Dimplomat gem https://github.com/WeAreFarmGeek/diplomat)
+Gorynich::Fetchers::ConsulSecure.new(storage: [CONSUL_KEY], file_path: [FILE_PATH], **options) # из консула с сохранением в файл (при недоступности консула будет читать из файла) / from consul with saving to a file (if unavailable, consul will read from the file) (options - from Dimplomat gem https://github.com/WeAreFarmGeek/diplomat)
 ```
 
 Пример / Example:
