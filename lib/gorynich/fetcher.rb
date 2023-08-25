@@ -1,5 +1,6 @@
 require_relative 'fetchers/file'
 require_relative 'fetchers/consul'
+require_relative 'fetchers/consul_secure'
 
 module Gorynich
   class Fetcher
@@ -32,7 +33,7 @@ module Gorynich
         elsif @fetcher.is_a?(Array)
           result = {}
           @fetcher.each do |f|
-            result = 
+            result =
               begin
                 f.fetch
               rescue ::StandardError

@@ -16,7 +16,7 @@
 
 `Gorynich` - это гем для реализации [мультитенантности](https://ru.wikipedia.org/wiki/Мультиарендность) (мультиарендности) в Ruby on Rails приложении. Позволяет обеспечить строгую изоляцию данных в нескольких СУБД, поддерживаемых в ActiveRecord.
 
-Поскольку мультитенантное приложение тесно связано с разделением данных, которые в свою очередь могут находиться в разных источниках (СУБД, S3, Redis и пр.), а также с их обработкой в разных подсистемах (ActiveJob, ActionCable), мы выбрали название ["Горыныч"](https://ru.wikipedia.org/wiki/Змей_Горыныч), чтобы подчеркнуть ~многоголовость~ многогранность интеграций. 
+Поскольку мультитенантное приложение тесно связано с разделением данных, которые в свою очередь могут находиться в разных источниках (СУБД, S3, Redis и пр.), а также с их обработкой в разных подсистемах (ActiveJob, ActionCable), мы выбрали название ["Горыныч"](https://ru.wikipedia.org/wiki/Змей_Горыныч), чтобы подчеркнуть ~многоголовость~ многогранность интеграций.
 
 ---
 
@@ -66,14 +66,14 @@ gem 'gorynich'
 ```sh
 bundle install # для установки гема / gem installation
 
-rails generate gorynich:install # для добавления шаблонов конфигурации / install configuration templates 
+rails generate gorynich:install # для добавления шаблонов конфигурации / install configuration templates
 ```
 
 ## Что такое тенант? / What tenant is?
 
 Тенант (в данном случае) - это активное подключение к СУБД, а также доступный в любом месте объект `Gorynich::Current`, в котором находятся параметры текущего тенанта. К нему можно обратиться в любом месте.
 
---- 
+---
 
 In this case tenant is an active connection to the DBMS, as well as a `Gorynich::Current` object available anywhere, which contains the parameters of the current tenant. You can refer to it anywhere, for example when sending emails:
 
@@ -94,7 +94,7 @@ end
 
 Например, при отправке писем изнутри ActiveJob использование выглядит так:
 
---- 
+---
 
 Before request processing [Gorynich::Rack::RackMiddleware](./lib/gorynich/head/rack_middleware.rb) ActiveRecord connection switching to apropriate database. Additional tenant properties available in any part of application through [ActiveSupport::CurrentAttributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html) as  `Gorynich::Current` instance. ActionCable, ActiveJob and other "heads" also uses `Gorynich::Current` to store context and evaluate it later.
 
@@ -130,19 +130,21 @@ end
 
 ## Использование / Usage
 
-### Настройка источника данных / Configuration source 
+### Настройка источника данных / Configuration source
 
-Для использования необходимо в файле `config/application.rb` добавить источник данных. Сейчас доступны 2 источника:
+Для использования необходимо в файле `config/application.rb` добавить источник данных. Сейчас доступны 3 источника:
 
 ---
 
-Now you need to select configuration source in `config/application.rb`. Yuo can choose from 2 source types now:
+Now you need to select configuration source in `config/application.rb`. Yuo can choose from 3 source types now:
 
 
 ```ruby
 Gorynich::Fetchers::File.new(file_path: [FILE_PATH]) # из файла / from file
 
 Gorynich::Fetchers::Consul.new(storage: [CONSUL_KEY], **options) # из консула / from consul (options - from Dimplomat gem https://github.com/WeAreFarmGeek/diplomat)
+
+Gorynich::Fetchers::ConsulSecure.new(storage: [CONSUL_KEY], file_path: [FILE_PATH], **options) # из консула с сохранением в файл (при недоступности консула будет читать из файла) / from consul with saving to a file (if unavailable, consul will read from the file) (options - from Dimplomat gem https://github.com/WeAreFarmGeek/diplomat)
 ```
 
 Пример / Example:
@@ -214,7 +216,7 @@ TENANT=tenant rails gc # default tenant name id  'default'
 
 Для создания статичного файла `database.yml` из источника данных (Fetcher) используйте:
 
---- 
+---
 
 For static `database.yml` generation from configured source (Fetcher) use:
 
@@ -228,7 +230,7 @@ rails gc:db:prepare
 
 Первый, самый простой способ работы, подходящий для локальной разработки, это статическая генерация `database.yml`.
 
---- 
+---
 
 First and most simple using of Gorynich handy for local development is static `database.yml` generation.
 
@@ -240,7 +242,7 @@ rails gc:db:prepare
 
 2. Полуавтоматический режим / Semi-automated mode
 
-Второй вариант - это создание конфигурации `database.yml` при старте Rails приложения - данные будут прочитаны из настроенного источника. В этом случае конфигурация СУБД может изменяться только при перезапуске приложения, но остальные настройки, такие как привязка тенантов к доменам и secrets, будут подхватываться "на лету" непосредственно во время работы приложения. Rake-задачи `db:create`, `db:migrate` работают для всех тенантов на момент запуска. 
+Второй вариант - это создание конфигурации `database.yml` при старте Rails приложения - данные будут прочитаны из настроенного источника. В этом случае конфигурация СУБД может изменяться только при перезапуске приложения, но остальные настройки, такие как привязка тенантов к доменам и secrets, будут подхватываться "на лету" непосредственно во время работы приложения. Rake-задачи `db:create`, `db:migrate` работают для всех тенантов на момент запуска.
 
 ---
 
@@ -353,7 +355,7 @@ config.telegram_updates_controller.session_store = :redis_cache_store, {
 }
 ```
 
-### Shrine 
+### Shrine
 
 ```ruby
 #lib/shrine/plugins/tenant_location.rb
