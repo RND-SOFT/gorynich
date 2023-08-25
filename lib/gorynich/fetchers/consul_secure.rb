@@ -1,6 +1,6 @@
 module Gorynich
   module Fetchers
-    class ConsulSec
+    class ConsulSecure
       attr_reader :storage, :file_path, :consul_opts
 
       def initialize(storage:, file_path:, **opts)

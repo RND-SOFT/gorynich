@@ -1,6 +1,6 @@
 require_relative 'fetchers/file'
 require_relative 'fetchers/consul'
-require_relative 'fetchers/consul_sec'
+require_relative 'fetchers/consul_secure'
 
 module Gorynich
   class Fetcher

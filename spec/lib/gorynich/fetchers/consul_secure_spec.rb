@@ -1,4 +1,4 @@
-RSpec.describe Gorynich::Fetchers::ConsulSec do
+RSpec.describe Gorynich::Fetchers::ConsulSecure do
   let(:storage) { Faker::Lorem.word }
   let(:file_path) { "#{RSPEC_ROOT}/fixtures/fetchers/file_config.yml" }
   let(:file_like_object) { double("file like object") }
