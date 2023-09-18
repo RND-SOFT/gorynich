@@ -16,6 +16,12 @@ module Gorynich
           @current_tenant = job_data.fetch(:tenant)
         end
 
+        def retry_job(options = {})
+          Gorynich.with(current_tenant, uri: current_uri) do |_current|
+            super
+          end
+        end
+
         around_perform do |job, block|
           Gorynich.with(
             job.current_tenant || Gorynich::Current.tenant,
