@@ -16,7 +16,7 @@ module Gorynich
           @current_tenant = job_data.fetch(:tenant)
         end
 
-        def retry_job(options = {})
+        def retry_job(**_options)
           Gorynich.with(current_tenant, uri: current_uri) do |_current|
             super
           end
