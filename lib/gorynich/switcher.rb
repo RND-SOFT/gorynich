@@ -26,6 +26,10 @@ module Gorynich
           yield(tenant)
         end
       end
+    rescue ::ActiveRecord::ConnectionNotEstablished => e
+      raise TenantNotFound, tenant unless ::Gorynich.instance.tenants.include?(tenant.to_s)
+
+      raise e
     end
 
     def with_current(tenant, **opts, &block)
