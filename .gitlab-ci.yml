@@ -13,7 +13,7 @@ stages:
   - build
   - deploy
 
-before_script: 
+before_script:
   - mkdir -p ~/.docker
   - echo ${DOCKER_AUTH_CONFIG} > ~/.docker/config.json
 
@@ -48,7 +48,7 @@ prepare:
     - docker compose build --force-rm
     - docker compose up --force-recreate -t 1 --remove-orphans -d
     - docker compose exec -T builder bundle exec rails db:create db:migrate
-    - docker compose exec -T builder rspec | tee .coverage
+    - docker compose exec -T builder bundle exec rspec | tee .coverage
     - docker compose exec -T builder cat rspec.xml > rspec.xml
     - docker cp $(docker compose ps -q builder):/home/app/coverage/ coverage/
   after_script:

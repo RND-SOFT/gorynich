@@ -21,14 +21,14 @@ unless %w[F FALSE 0].include? ENV['COVERAGE'].to_s.upcase
       source_file.src.first&.match(/skip coverage/)
     end
   end
-  
+
   if ENV['TEST_ENV_NUMBER'] # parallel specs
     SimpleCov.at_exit do
       result = SimpleCov.result
       result.format! if ParallelTests.number_of_running_processes <= 1
     end
   end
-  
+
 end
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
