@@ -26,7 +26,7 @@ module Gorynich
     #
     def fetch
       cfg = Gorynich.configuration.cache.fetch(
-        %i[gorynich fetcher fetch], expires_in: @cache_expiration.seconds, namespace: @namespace
+        cache_key, expires_in: @cache_expiration.seconds, namespace: @namespace
       ) do
         if @fetcher.nil?
           {}
@@ -50,6 +50,19 @@ module Gorynich
       raise Error, 'Config is empty' if cfg.empty?
 
       cfg.deep_transform_keys(&:downcase)
+    end
+
+    #
+    # Delete cache
+    #
+    def reset
+      Gorynich.configuration.cache.delete(cache_key)
+    end
+
+    private
+
+    def cache_key
+      %i[gorynich fetcher fetch]
     end
   end
 end

@@ -7,9 +7,6 @@ module Gorynich
       end
 
       def call(env)
-        @config ||= Gorynich.instance
-        @config.actualize
-
         tenant, opts = Gorynich.switcher.analyze(env)
 
         Gorynich.with(tenant, **opts) do
