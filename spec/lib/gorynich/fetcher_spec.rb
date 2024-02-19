@@ -109,4 +109,18 @@ RSpec.describe Gorynich::Fetcher do
       expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(true)
     end
   end
+
+  describe '#reset' do
+    let(:fetcher) { Gorynich::Fetchers::File.new(file_path: file_path) }
+
+    subject { described_class.new(fetcher: fetcher) }
+
+    it do
+      subject.fetch
+      expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(true)
+
+      subject.reset
+      expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(false)
+    end
+  end
 end

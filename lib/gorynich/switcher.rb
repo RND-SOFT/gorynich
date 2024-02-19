@@ -1,5 +1,7 @@
 module Gorynich
   class Switcher
+    DATABASE_RETRY_LIMIT = 2
+
     def initialize(config:)
       @config = config
     end
@@ -20,14 +22,30 @@ module Gorynich
       [tenant, { host: host, uri: uri }]
     end
 
+    #
+    # Connect to database
+    #
+    # @param [String, Symbol] tenant Tenant (database role)
+    #
     def with_database(tenant)
+      retries ||= 0
       ::ActiveRecord::Base.connected_to role: tenant.to_sym do
         ::ActiveRecord::Base.connection_pool.with_connection do
           yield(tenant)
         end
       end
     rescue ::ActiveRecord::ConnectionNotEstablished => e
-      raise TenantNotFound, tenant unless ::Gorynich.instance.tenants.include?(tenant.to_s)
+      config = ::Gorynich.instance
+      config.actualize
+
+      raise TenantNotFound, tenant unless config.tenants.include?(tenant.to_s)
+      if (retries += 1) < DATABASE_RETRY_LIMIT
+        ActiveRecord::Base.connection_handler.establish_connection(
+          config.database(tenant), role: tenant.to_sym
+        )
+
+        retry
+      end
 
       raise e
     end
