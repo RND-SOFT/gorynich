@@ -126,13 +126,17 @@ module Gorynich
 
     #
     # Database config for database.yml
+    # If used <%= Gorynich.instance.database_config(your_enviroment) %> without gorynich config it will raise an error.
+    # You can use <%= Gorynich.instance.database_config(your_enviroment, fail_ignore: true) %> if there is no configuration for the environment
+    # and dummy_value depending on whether you have a configuration in the database.yml under this environment (dummy_value: nil when there is and dummy_value: {} if there is not. Default dummy_value is nil)
     #
     # @param [String] env enviroment
-    # @param [Boolean] with_ignore ignore if there is no configuration for the environment
+    # @param [Boolean] fail_ignore ignore if there is no configuration for the environment
+    # @param [nil or Hash] dummy_value value for YAML if there is no config.
     #
     # @return [String] yaml result
     #
-    def database_config(env = nil, fail_ignore: false)
+    def database_config(env = nil, fail_ignore: false, dummy_value: nil)
       envs = Dir.glob(Rails.root.join('config/environments/*.rb').to_s).map { |f| File.basename(f, '.rb') }
       cfg = fetcher.fetch.extract!(*envs)
 
@@ -146,7 +150,7 @@ module Gorynich
           end
         else
           if fail_ignore && cfg[env].nil?
-            { env => {} }
+            { env => dummy_value }
           else
             {
               env => configs_sort(cfg.fetch(env)).to_h { |t, c| [t, c.fetch('db_config')] }

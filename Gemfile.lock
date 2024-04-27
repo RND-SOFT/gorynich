@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gorynich (1.3.2)
+    gorynich (1.3.3)
       diplomat (~> 2)
       railties (>= 6.1)
 
