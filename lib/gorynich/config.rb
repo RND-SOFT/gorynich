@@ -145,8 +145,8 @@ module Gorynich
             ]
           end
         else
-          if fail_ignore && cfg.fetch(env, nil).nil?
-            { env => nil}
+          if fail_ignore && cfg[env].nil?
+            { env => {} }
           else
             {
               env => configs_sort(cfg.fetch(env)).to_h { |t, c| [t, c.fetch('db_config')] }
