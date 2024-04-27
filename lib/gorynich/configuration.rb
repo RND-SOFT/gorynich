@@ -1,5 +1,14 @@
 module Gorynich
   class Configuration
+    #
+    # Cache dummy
+    #
+    class NullStore
+      def fetch(*args, **kwargs, &block)
+        block.call
+      end
+    end
+
     attr_accessor :cache,
                   :fetcher,
                   :namespace,
@@ -7,7 +16,7 @@ module Gorynich
                   :rack_env_handler
 
     def initialize
-      @cache = ActiveSupport::Cache::NullStore.new
+      @cache = NullStore.new
       @fetcher = nil
       @namespace = nil
       @cache_expiration = 30
