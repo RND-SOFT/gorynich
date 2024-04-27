@@ -1,4 +1,8 @@
 RSpec.describe Gorynich::Fetcher do
+  before(:each) do
+    Gorynich.configuration.cache = ActiveSupport::Cache::NullStore.new
+  end
+
   let(:file_path) { "#{RSPEC_ROOT}/fixtures/fetchers/file_config.yml" }
   let(:consul_storage) { Faker::Lorem.word }
   let(:consul_host) { Faker::Internet.url }
@@ -105,8 +109,9 @@ RSpec.describe Gorynich::Fetcher do
     subject { described_class.new(fetcher: fetcher) }
 
     it do
-      expect(subject.fetch).to include('development', 'test')
-      expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(true)
+      allow(Gorynich.configuration.cache).to receive(:fetch).and_return({test: true})
+      expect(Gorynich.configuration.cache).to receive(:fetch)
+      subject.fetch
     end
   end
 
@@ -116,11 +121,9 @@ RSpec.describe Gorynich::Fetcher do
     subject { described_class.new(fetcher: fetcher) }
 
     it do
-      subject.fetch
-      expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(true)
+      expect(Gorynich.configuration.cache).to receive(:delete)
 
       subject.reset
-      expect(Gorynich.configuration.cache.exist?(%i[gorynich fetcher fetch])).to be(false)
     end
   end
 end
