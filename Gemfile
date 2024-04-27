@@ -10,5 +10,21 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
-# To use a debugger
 gem 'byebug', group: %i[development test]
+gem 'factory_bot_rails'
+gem 'faker'
+gem 'pg'
+gem 'racc'
+gem 'rails', '~> 6.1'
+gem 'rspec-collection_matchers'
+gem 'rspec_junit_formatter'
+gem 'rspec-rails'
+gem 'rspec-retry'
+gem 'rspec-set'
+gem 'shoulda-callback-matchers'
+gem 'shoulda-matchers'
+gem 'simplecov'
+gem 'simplecov-cobertura'
+gem 'simplecov-console'
+gem 'tzinfo-data'
+gem 'webmock'
