@@ -26,7 +26,7 @@ module Gorynich
         envs = ::Dir.glob(::Rails.root.join('config/environments/*.rb').to_s).map { |f| ::File.basename(f, '.rb') }
 
         ::File.open(file_path, 'w') do |f|
-          f << cfg.deep_transform_keys(&:downcase).select { |k, _v| envs.include?(k) }.to_yaml.gsub('---', '')
+          f << cfg.deep_transform_keys(&:downcase).select { |k, _v| envs.include?(k) }.to_yaml.gsub(/^---/, '')
         end
       end
 

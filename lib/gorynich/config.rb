@@ -158,7 +158,7 @@ module Gorynich
           end
         end
 
-      result.to_yaml.gsub('---', '')
+      result.to_yaml.gsub(/^---/, '')
     end
 
     #
