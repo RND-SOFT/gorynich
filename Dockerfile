@@ -25,16 +25,13 @@ ARG GEM_STORAGE_AUTH
 ENV BUNDLE_NEXUS__RNDS__LOCAL ${GEM_STORAGE_AUTH}
 
 RUN set -ex \
-  && gem install bundler && gem update bundler \
   && bundle install --jobs=3 \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 
-ONBUILD ADD . /home/app/
+ADD . /home/app/
 
-ONBUILD RUN set -ex \
+RUN set -ex \
   && bundle install --jobs=3 \
   && rm -rf /tmp/* /var/tmp/* /usr/src/ruby /root/.gem /usr/local/bundle/cache
 
 CMD ["tail", "-f", "/dev/null"]
-
-
