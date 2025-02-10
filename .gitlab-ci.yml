@@ -17,37 +17,19 @@ before_script:
   - mkdir -p ~/.docker
   - echo ${DOCKER_AUTH_CONFIG} > ~/.docker/config.json
 
-# PREPARE STAGE
-
-prepare:
-  stage: .pre
-  image: ${DOCKER_IMAGE}
-  interruptible: true
-  variables:
-    TAG: ${BUILD_TAG}
-  script:
-    - docker compose build --force-rm --pull
-    - TAG=${COMMIT_SHA} docker compose build --force-rm
-    - docker compose push
-    - TAG=${COMMIT_SHA} docker compose push
-
 # TEST STAGE
 
 .test:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: ${DOCKER_IMAGE}
   stage: tests
   variables:
      COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
   script:
-    - echo PREPARE
-    - export TAG=${RUBY_VER}-${BRANCH_TAG}-base
-    - docker compose build --force-rm --pull
-    - export BASE_IMG=${IMAGE}
-    - export BASE_TAG=${TAG}
-    - export TAG=${RUBY_VER}-${BRANCH_TAG}
+    - export BASE_IMG=${BASE_IMG}
+    - export BASE_TAG=${RUBY_VER}
     - docker compose build --force-rm
-    - docker compose config
     - docker compose up --force-recreate -t 1 --remove-orphans -d
+    - docker compose exec -T builder ruby --version
     - docker compose exec -T builder bundle exec rails db:create db:migrate
     - docker compose exec -T builder bundle exec rspec | tee .coverage
     - docker compose exec -T builder cat rspec.xml > rspec.xml
@@ -72,12 +54,12 @@ units:
   extends: .test
   parallel:
     matrix:
-      - RUBY_VER: [2.7.4-alpine, 3.2-alpine3.21]
+      - RUBY_VER: [3.2-alpine3.21]
 
 # BUILD STAGE
 
 build:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: rnds/ruby:3.0-test
   stage: build
   variables:
     BUILDVERSION: ${CI_PIPELINE_ID}
