@@ -59,7 +59,7 @@ units:
 # BUILD STAGE
 
 build:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: rnds/ruby:3.0-test
   stage: build
   variables:
     BUILDVERSION: ${CI_PIPELINE_ID}
