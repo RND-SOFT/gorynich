@@ -71,7 +71,7 @@ units:
   extends: .test
   parallel:
     matrix:
-      - RUBY_VER: [2.6-alpine, 3.0-alpine, alpine]
+      - RUBY_VER: [2.7-alpine, 3.2-alpine]
 
 # BUILD STAGE
 
