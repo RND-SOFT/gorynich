@@ -46,6 +46,7 @@ prepare:
     - export BASE_TAG=${TAG}
     - export TAG=${RUBY_VER}-${BRANCH_TAG}
     - docker compose build --force-rm
+    - docker compose config
     - docker compose up --force-recreate -t 1 --remove-orphans -d
     - docker compose exec -T builder bundle exec rails db:create db:migrate
     - docker compose exec -T builder bundle exec rspec | tee .coverage
