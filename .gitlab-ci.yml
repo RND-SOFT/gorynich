@@ -20,7 +20,7 @@ before_script:
 # TEST STAGE
 
 .test:
-  image: ${IMAGE}:${BUILD_TAG}
+  image: ${DOCKER_IMAGE}
   stage: tests
   variables:
      COMPOSE_PROJECT_NAME: gorynich_${CI_PIPELINE_ID}_${CI_JOB_ID}
