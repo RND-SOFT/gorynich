@@ -81,20 +81,20 @@ build:
 pushgem:internal:
   image: rnds/ruby:3.0-test
   stage: deploy
+  when: manual
   variables:
-    GEM_REPOSITORY: "https://qlibrary.rnds.pro/repository/internal"
+    GEM_REPOSITORY: "https://library.rnds.pro/repository/internal"
   script:
     - mkdir -p ~/.gem
     - export GEMFILE=`ls *.gem | tail -n 1`
     - gem nexus -V --url=$GEM_REPOSITORY --credential=$GEM_STORAGE_CREDS  `ls | grep gem$`
   only:
     - master
-    - /^v\d$/
-    - /^v\d\.\d$/
 
 pushgem:rubygems:
   image: rnds/ruby:3.0-test
   stage: deploy
+  when: manual
   script:
     - mkdir -p ~/.gem
     - 'echo ":rubygems_api_key: ${RUBYGEMS_KEY}" > ~/.gem/credentials'
@@ -103,8 +103,6 @@ pushgem:rubygems:
     - gem push $GEMFILE
   only:
     - master
-    - /^v\d$/
-    - /^v\d\.\d$/
 
 badges:
   image: harbor.rnds.pro/dockerhub/rnds/gitlab-runner:latest
